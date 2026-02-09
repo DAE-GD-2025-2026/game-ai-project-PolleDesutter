@@ -47,6 +47,7 @@ SteeringOutput Wander::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 	const FVector2D RandPositionOnCircle = CircleCenterPosition + WanderRadius * FVector2D(cos(WanderAngle), sin(WanderAngle));
 	
 	Steering.LinearVelocity = RandPositionOnCircle - Agent.GetPosition();
+	Target.Position = RandPositionOnCircle;
 	
 	// TODO: Add debug rendering
 	if (Agent.GetDebugRenderingEnabled())
