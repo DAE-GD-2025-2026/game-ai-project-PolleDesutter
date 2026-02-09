@@ -55,14 +55,15 @@ public:
 	
 	virtual SteeringOutput CalculateSteering(float DeltaT, ASteeringAgent & Agent) override;
 	
-	void SetWanderOffset(float Offset) { OffsetDistance = Offset;}
+	void SetWanderOffset(float Offset) { OffsetDistance = Offset; }
 	void SetWanderRadius(float Radius) { WanderRadius = Radius; }
-	void SetMaxAngleChange(float AngleDegrees) { WanderAngle = AngleDegrees;}
+	// Angle in degrees
+	void SetMaxAngleChange(float Angle) { MaxAngleChange = Angle; }
 	
 protected:
 	float OffsetDistance{ 200.f };
-	float WanderRadius{ 1000.f };
-	float MaxAngleChange{ FMath::DegreesToRadians(10) };
+	float WanderRadius{ 200.f };
+	float MaxAngleChange{ 45.f };
 	float WanderAngle{ 0.f };
 	
 	
