@@ -34,10 +34,11 @@ SteeringOutput Wander::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 {
 	SteeringOutput Steering{};
 
-	const float Direction = Agent.GetAngularVelocity();
+	const float Direction = Agent.GetRotation();
 	const FVector2D Position = Agent.GetPosition();
+	UE_LOG(LogTemp, Warning, TEXT("Wandering direction: %f"), Direction);
 
-	const FVector2D CircleCenterOffset{OffsetDistance * FMath::Cos(Direction), OffsetDistance * FMath::Sin(Direction)};
+	const FVector2D CircleCenterOffset{OffsetDistance * FVector2D(FMath::Cos(Direction), FMath::Sin(Direction))};
 	const FVector2D CircleCenterPosition = Position + CircleCenterOffset;
 	
 	WanderAngle = FMath::RandRange(WanderAngle - MaxAngleChange, WanderAngle + MaxAngleChange);
@@ -47,6 +48,30 @@ SteeringOutput Wander::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 	Steering.LinearVelocity = RandPositionOnCircle - Agent.GetPosition();
 	
 	// TODO: Add debug rendering
+	if (Agent.GetDebugRenderingEnabled())
+	{
+		UWorld* World = Agent.GetWorld();
+		if (!World)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("World is invalid"));
+			return Steering;
+		}
+		
+		// Debug Steering
+		FVector2D DirectionLineEndPoint{ Position + DebugSteeringLineLength * FVector2D(FMath::Cos(Direction), FMath::Sin(Direction)) };
+		FVector2D DirectionLineLeftEndPoint{ Position + DebugSteeringLineLength * FVector2D(FMath::Cos(Direction - 90), FMath::Sin(Direction - 90)) };
+		
+		DrawDebugLine(World, FVector(Position, 0), FVector(DirectionLineEndPoint, 0), DebugSteeringDirectionColor);
+		DrawDebugLine(World, FVector(Position, 0), FVector(DirectionLineLeftEndPoint, 0), DebugSteeringDirectionLeftColor);
+			
+		
+		// DrawDebugPoint(World, FVector(DirectionLineEndPoint, 0), 10, DebugCirclePointColor, false, 0.5f);
+		
+		// Debug Wandering	
+		DrawDebugCircle(World, FVector(CircleCenterPosition, 0), WanderRadius, 12, DebugCircleColor, false, 0.f, 0, 2.f, FVector(1,0,0), FVector(0,1,0), false);
+		DrawDebugPoint(World, FVector(RandPositionOnCircle, 0), 10, DebugCirclePointColor, false, 0.1f);
+		
+	}
 	
 	
 	

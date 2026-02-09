@@ -60,10 +60,20 @@ public:
 	void SetMaxAngleChange(float AngleDegrees) { WanderAngle = AngleDegrees;}
 	
 protected:
-	float OffsetDistance{ 6.f };
-	float WanderRadius{ 4.f };
-	float MaxAngleChange{ FMath::DegreesToRadians(45) };
+	float OffsetDistance{ 200.f };
+	float WanderRadius{ 1000.f };
+	float MaxAngleChange{ FMath::DegreesToRadians(10) };
 	float WanderAngle{ 0.f };
+	
+	
+	const FColor DebugCircleColor{ FColor::Blue };	
+	const FColor DebugCirclePointColor{ FColor::Green };	
+	
+	const FColor DebugSteeringDirectionColor{ FColor::Magenta };	
+	const FColor DebugSteeringDirectionLeftColor{ FColor::Cyan };	
+	
+	const float DebugSteeringLineLength{ 150.f };	
+	
 };
 
 class Arrive : public ISteeringBehavior
