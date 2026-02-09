@@ -84,6 +84,20 @@ public:
 	virtual ~Arrive() = default;
 	
 	virtual SteeringOutput CalculateSteering(float DeltaT, ASteeringAgent & Agent) override;
+	
+protected:
+	float SlowRadius{ 700.f };
+	float TargetRadius{ 200.f };
+	
+	const FColor DebugTargetColor{ FColor::Red };	
+	
+	const FColor DebugSlowCircleColor{ FColor::Blue };	
+	const FColor DebugTargetCircleColor{ FColor::Orange };	
+	
+	const FColor DebugSteeringDirectionColor{ FColor::Magenta };	
+	const FColor DebugSteeringDirectionLeftColor{ FColor::Cyan };	
+	
+	const float DebugSteeringLineLength{ 150.f };	
 };
 
 class Evade : public ISteeringBehavior

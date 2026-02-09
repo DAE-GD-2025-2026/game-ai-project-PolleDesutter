@@ -237,6 +237,10 @@ void ALevel_SteeringBehaviors::SetAgentBehavior(ImGui_Agent& Agent)
 	case BehaviorTypes::Wander:
 		Agent.Behavior = std::make_unique<Wander>();
 		break;
+			
+	case BehaviorTypes::Arrive:
+		Agent.Behavior = std::make_unique<Arrive>();
+		break;
 		
 	default:
 		assert(false); // Incorrect Agent Behavior gotten during SetAgentBehavior()	
