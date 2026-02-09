@@ -37,3 +37,58 @@ public:
 	virtual SteeringOutput CalculateSteering(float DeltaT, ASteeringAgent & Agent) override;
 	
 };
+
+class Flee : public ISteeringBehavior
+{
+public:
+	Flee() = default;
+	virtual ~Flee() = default;
+	
+	virtual SteeringOutput CalculateSteering(float DeltaT, ASteeringAgent & Agent) override;
+};
+
+class Wander : public ISteeringBehavior
+{
+public:
+	Wander() = default;
+	virtual ~Wander() = default;
+	
+	virtual SteeringOutput CalculateSteering(float DeltaT, ASteeringAgent & Agent) override;
+	
+	void SetWanderOffset(float Offset) { OffsetDistance = Offset;}
+	void SetWanderRadius(float Radius) { WanderRadius = Radius; }
+	void SetMaxAngleChange(float AngleDegrees) { WanderAngle = AngleDegrees;}
+	
+protected:
+	float OffsetDistance{ 6.f };
+	float WanderRadius{ 4.f };
+	float MaxAngleChange{ FMath::DegreesToRadians(45) };
+	float WanderAngle{ 0.f };
+};
+
+class Arrive : public ISteeringBehavior
+{
+public:
+	Arrive() = default;
+	virtual ~Arrive() = default;
+	
+	virtual SteeringOutput CalculateSteering(float DeltaT, ASteeringAgent & Agent) override;
+};
+
+class Evade : public ISteeringBehavior
+{
+public:
+	Evade() = default;
+	virtual ~Evade() = default;
+	
+	virtual SteeringOutput CalculateSteering(float DeltaT, ASteeringAgent & Agent) override;
+};
+
+class Pursuit : public ISteeringBehavior
+{
+public:
+	Pursuit() = default;
+	virtual ~Pursuit() = default;
+	
+	virtual SteeringOutput CalculateSteering(float DeltaT, ASteeringAgent & Agent) override;
+};
