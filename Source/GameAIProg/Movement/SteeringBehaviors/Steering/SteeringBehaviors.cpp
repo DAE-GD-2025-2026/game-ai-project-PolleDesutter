@@ -1,8 +1,6 @@
 #include "SteeringBehaviors.h"
 
-#include "Chaos/ChaosPerfTest.h"
 #include "GameAIProg/Movement/SteeringBehaviors/SteeringAgent.h"
-#include "Math/UnitConversion.h"
 #include "Shared/ImGuiHelpers.h"
 #include "Shared/MathHelpers.h"
 
@@ -171,13 +169,50 @@ SteeringOutput Pursuit::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 			return Steering;
 		}	
 		
-		const FVector2D AgentPosition = Agent.GetPosition();
-		
 		DrawDebugPoint(World, FVector(PredictedPosition, 0.f), 100.f, FColor::Red);
-			
 	}
 	
 	return Steering;
 }
 
+SteeringOutput Evade::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
+{
+	SteeringOutput Steering{};
+	
+	
+	// Toggle Debug rendering off for temp result
+	const bool DebugEnabled = Agent.GetDebugRenderingEnabled();
+	Agent.SetDebugRenderingEnabled(false);
+	
+	// Set Steering
+	Pursuit TempPursuit{};
+	TempPursuit.SetTarget(Target);
+	Steering = TempPursuit.CalculateSteering(DeltaT, Agent);
+	
+	// Toggle Debug rendering to previous value
+	Agent.SetDebugRenderingEnabled(DebugEnabled);
+	
+	// Go the opposite direction of the pursuit direction
+	Steering.LinearVelocity *= -1;
+	
+
+	if (Agent.GetDebugRenderingEnabled())
+	{
+		const UWorld* World = Agent.GetWorld();
+		if (!World)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("World is invalid"));
+			return Steering;
+		}	
+		
+		const FVector2D PredictedPosition = TempPursuit.GetPredictedPosition();
+		const FVector2D EvadePosition = Agent.GetPosition() - (PredictedPosition - Agent.GetPosition());	
+		
+		DrawDebugPoint(World, FVector(PredictedPosition, 0.f), 100.f, DebugPredictedLocationColor);
+		DrawDebugPoint(World, FVector(EvadePosition, 0.f), 100.f, DebugEvadingLocationColor);
+				
+	}
+	
+	return Steering;
+}
 
