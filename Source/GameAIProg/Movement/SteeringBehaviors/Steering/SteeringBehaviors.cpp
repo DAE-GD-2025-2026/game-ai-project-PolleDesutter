@@ -13,7 +13,23 @@ SteeringOutput Seek::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 	
 	Steering.LinearVelocity = Target.Position - Agent.GetPosition();
 	
-	// TODO: Add debug rendering
+	
+	// Debug Rendering
+	if (Agent.GetDebugRenderingEnabled())
+	{
+		const UWorld* World = Agent.GetWorld();
+		if (!World)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("World is invalid"));
+			return Steering;
+		}
+				
+		SteeringHelpers::DrawDebugDirection(Agent);
+		
+		// Draw Target
+		DrawDebugPoint(World, FVector(Target.Position, 0), ConstantHelpers::DebugDefaultPointSize, ConstantHelpers::DebugTargetColor);
+		
+	}
 	
 	return Steering;
 }
@@ -22,14 +38,38 @@ SteeringOutput Flee::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 {
 	SteeringOutput Steering{};
 	
+	// Toggle Debug rendering off for temp result
+	const bool DebugEnabled = Agent.GetDebugRenderingEnabled();
+	Agent.SetDebugRenderingEnabled(false);
+	
+	// Set Steering
 	Seek TempSeek{};
 	TempSeek.SetTarget(Target);
 	Steering = TempSeek.CalculateSteering(DeltaT, Agent);
+	
+	// Toggle Debug rendering to previous value
+	Agent.SetDebugRenderingEnabled(DebugEnabled);
+	
+	// Go the opposite direction of the seek direction
 	Steering.LinearVelocity *= -1;
-	Steering.AngularVelocity *= -1;
 	
 	
-	// TODO: Add debug rendering
+	// Debug Rendering
+	if (Agent.GetDebugRenderingEnabled())
+	{
+		const UWorld* World = Agent.GetWorld();
+		if (!World)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("World is invalid"));
+			return Steering;
+		}
+		
+		SteeringHelpers::DrawDebugDirection(Agent);
+		
+		// Draw Flee Target
+		DrawDebugPoint(World, FVector(Target.Position, 0), ConstantHelpers::DebugDefaultPointSize, DebugFleePointColor);
+	}
+	
 	return Steering;
 }
 
@@ -62,12 +102,7 @@ SteeringOutput Wander::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 			return Steering;
 		}
 		
-		// Debug Steering
-		const FVector2D DirectionEndPoint{ Position + ConstantHelpers::DebugDefaultLineLength * Direction };
-		const FVector2D DirectionLeftEndPoint{ Position + ConstantHelpers::DebugDefaultLineLength * FVector2D(Direction.Y, -Direction.X) };
-		
-		DrawDebugLine(World, FVector(Position, 0), FVector(DirectionEndPoint, 0), ConstantHelpers::DebugDirectionColor);
-		DrawDebugLine(World, FVector(Position, 0), FVector(DirectionLeftEndPoint, 0), ConstantHelpers::DebugDirectionLeftColor);
+		SteeringHelpers::DrawDebugDirection(Agent);
 			
 		// Debug Wandering	
 		DrawDebugCircle(World, FVector(CircleCenterPosition, 0), WanderRadius, ConstantHelpers::DebugDefaultCircleSegments, DebugCircleColor, false, 0.f, 0, 2.f, FVector(1,0,0), FVector(0,1,0), false);
@@ -126,7 +161,7 @@ SteeringOutput Arrive::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 		DrawDebugCircle(World, FVector(Position, 0), TargetRadius, ConstantHelpers::DebugDefaultCircleSegments, DebugTargetCircleColor, false, 0.f, 0, 2.f, FVector(1,0,0), FVector(0,1,0), false);
 		
 		// Debug Target
-		DrawDebugPoint(World, FVector(Target.Position, 0), ConstantHelpers::DebugDefaultPointSize, ConstantHelpers::DebugTargetColor, false, 0.1f);
+		DrawDebugPoint(World, FVector(Target.Position, 0), ConstantHelpers::DebugDefaultPointSize, ConstantHelpers::DebugTargetColor);
 		
 	}
 	
@@ -137,7 +172,6 @@ SteeringOutput Arrive::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 SteeringOutput Pursuit::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 {
 	SteeringOutput Steering{};	
-	
 	
 	const float DistanceToTarget = FVector2D::Distance(Agent.GetPosition(), Target.Position);
 	const float AgentSpeed = Agent.GetMaxLinearSpeed();
@@ -153,10 +187,6 @@ SteeringOutput Pursuit::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 	
 	Steering.LinearVelocity = (PredictedPosition - Agent.GetPosition()).GetSafeNormal();
 	
-	
-	// Check if predicted position is 
-	
-		
 	const FString Message = FString::Printf(TEXT("PositionTarget: %s, TimeToReach: %f"), *PredictedPosition.ToString(), TimeToReachTarget);
 	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, Message);
 	
@@ -170,7 +200,11 @@ SteeringOutput Pursuit::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 			return Steering;
 		}	
 		
+		// Draw Predicted Position
 		DrawDebugPoint(World, FVector(PredictedPosition, 0.f), ConstantHelpers::DebugDefaultPointSize, ConstantHelpers::DebugTargetColor);
+		
+		// Draw Target Position
+		DrawDebugPoint(World, FVector(Target.Position, 0), ConstantHelpers::DebugDefaultPointSize, DebugTargetCurrentLocationColor);
 	}
 	
 	return Steering;

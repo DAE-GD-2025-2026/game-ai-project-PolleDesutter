@@ -3,6 +3,8 @@
 #include "CoreMinimal.h"
 #include "SteeringHelpers.generated.h"
 
+class ASteeringAgent;
+
 //SteeringParams (alias TargetData)
 USTRUCT(BlueprintType)
 struct FSteeringParams final //Also used as Target for SteeringBehaviors
@@ -124,3 +126,9 @@ struct SteeringOutput final
 		return *this;
 	}
 };
+
+namespace SteeringHelpers
+{
+	void DrawDebugDirection(const ASteeringAgent& Agent);
+	
+}

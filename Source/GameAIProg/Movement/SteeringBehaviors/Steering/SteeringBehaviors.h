@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Movement/SteeringBehaviors/SteeringHelpers.h>
-#include "Kismet/KismetMathLibrary.h"
 
 class ASteeringAgent;
 
@@ -33,7 +32,6 @@ public:
 	Seek() = default;
 	virtual ~Seek() = default;
 	
-	// steering
 	virtual SteeringOutput CalculateSteering(float DeltaT, ASteeringAgent & Agent) override;
 	
 };
@@ -45,6 +43,10 @@ public:
 	virtual ~Flee() = default;
 	
 	virtual SteeringOutput CalculateSteering(float DeltaT, ASteeringAgent & Agent) override;
+	
+protected:
+	const FColor DebugFleePointColor{ FColor::Blue };
+	
 };
 
 class Wander : public ISteeringBehavior
@@ -66,10 +68,8 @@ protected:
 	float MaxAngleChange{ 45.f };
 	float WanderAngle{ 0.f };
 	
-	
 	const FColor DebugCircleColor{ FColor::Blue };	
 	const FColor DebugCirclePointColor{ FColor::Green };	
-	
 	
 };
 
@@ -103,6 +103,7 @@ public:
 protected:
 	FVector2D PredictedPosition;
 	
+	const FColor DebugTargetCurrentLocationColor{ FColor::Blue };
 	
 };
 
@@ -115,7 +116,6 @@ public:
 	virtual SteeringOutput CalculateSteering(float DeltaT, ASteeringAgent & Agent) override;
 	
 protected:
-	
 	const FColor DebugPredictedLocationColor{ FColor::Blue };
 	
 };
