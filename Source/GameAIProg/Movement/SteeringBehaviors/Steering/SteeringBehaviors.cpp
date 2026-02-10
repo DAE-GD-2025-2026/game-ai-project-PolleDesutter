@@ -36,7 +36,6 @@ SteeringOutput Seek::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 
 SteeringOutput Flee::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 {
-	SteeringOutput Steering{};
 	
 	// Toggle Debug rendering off for temp result
 	const bool DebugEnabled = Agent.GetDebugRenderingEnabled();
@@ -45,7 +44,7 @@ SteeringOutput Flee::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 	// Set Steering
 	Seek TempSeek{};
 	TempSeek.SetTarget(Target);
-	Steering = TempSeek.CalculateSteering(DeltaT, Agent);
+	SteeringOutput Steering = TempSeek.CalculateSteering(DeltaT, Agent);
 	
 	// Toggle Debug rendering to previous value
 	Agent.SetDebugRenderingEnabled(DebugEnabled);
@@ -212,9 +211,6 @@ SteeringOutput Pursuit::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 
 SteeringOutput Evade::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 {
-	SteeringOutput Steering{};
-	
-	
 	// Toggle Debug rendering off for temp result
 	const bool DebugEnabled = Agent.GetDebugRenderingEnabled();
 	Agent.SetDebugRenderingEnabled(false);
@@ -222,7 +218,7 @@ SteeringOutput Evade::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 	// Set Steering
 	Pursuit TempPursuit{};
 	TempPursuit.SetTarget(Target);
-	Steering = TempPursuit.CalculateSteering(DeltaT, Agent);
+	SteeringOutput Steering = TempPursuit.CalculateSteering(DeltaT, Agent);
 	
 	// Toggle Debug rendering to previous value
 	Agent.SetDebugRenderingEnabled(DebugEnabled);
