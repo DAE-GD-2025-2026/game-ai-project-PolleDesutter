@@ -1,4 +1,6 @@
 #include "SteeringBehaviors.h"
+
+#include "Chaos/ChaosPerfTest.h"
 #include "GameAIProg/Movement/SteeringBehaviors/SteeringAgent.h"
 #include "Math/UnitConversion.h"
 #include "Shared/ImGuiHelpers.h"
@@ -79,7 +81,7 @@ SteeringOutput Wander::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 
 SteeringOutput Arrive::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 {
-	SteeringOutput Steering;
+	SteeringOutput Steering{};
 	
 	const float DistanceToTarget = FVector2D::Distance(Agent.GetPosition(), Target.Position);
 	
@@ -132,4 +134,50 @@ SteeringOutput Arrive::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 	
 	return Steering;	
 }
+
+SteeringOutput Pursuit::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
+{
+	SteeringOutput Steering{};	
+	
+	
+	const float DistanceToTarget = FVector2D::Distance(Agent.GetPosition(), Target.Position);
+	const float AgentSpeed = Agent.GetMaxLinearSpeed();
+	
+	if (AgentSpeed == 0.f)
+	{
+		return Steering;
+	}
+	
+	const float TimeToReachTarget = DistanceToTarget / AgentSpeed; 
+	
+	PredictedPosition = Target.Position + Target.LinearVelocity * TimeToReachTarget;
+	
+	Steering.LinearVelocity = (PredictedPosition - Agent.GetPosition()).GetSafeNormal();
+	
+	
+	// Check if predicted position is 
+	
+		
+	const FString Message = FString::Printf(TEXT("PositionTarget: %s, TimeToReach: %f"), *PredictedPosition.ToString(), TimeToReachTarget);
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, Message);
+	
+	// Debug Rendering
+	if (Agent.GetDebugRenderingEnabled())
+	{
+		const UWorld* World = Agent.GetWorld();
+		if (!World)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("World is invalid"));
+			return Steering;
+		}	
+		
+		const FVector2D AgentPosition = Agent.GetPosition();
+		
+		DrawDebugPoint(World, FVector(PredictedPosition, 0.f), 100.f, FColor::Red);
+			
+	}
+	
+	return Steering;
+}
+
 

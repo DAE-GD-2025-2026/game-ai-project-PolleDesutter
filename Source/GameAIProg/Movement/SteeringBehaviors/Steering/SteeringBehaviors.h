@@ -100,15 +100,6 @@ protected:
 	const float DebugSteeringLineLength{ 150.f };	
 };
 
-class Evade : public ISteeringBehavior
-{
-public:
-	Evade() = default;
-	virtual ~Evade() = default;
-	
-	virtual SteeringOutput CalculateSteering(float DeltaT, ASteeringAgent & Agent) override;
-};
-
 class Pursuit : public ISteeringBehavior
 {
 public:
@@ -116,4 +107,28 @@ public:
 	virtual ~Pursuit() = default;
 	
 	virtual SteeringOutput CalculateSteering(float DeltaT, ASteeringAgent & Agent) override;
+	
+	FVector2D GetPredictedPosition() const { return PredictedPosition; }
+	
+protected:
+	FVector2D PredictedPosition;
+	
+	const FColor DebugPredictedLocationColor{ FColor::Red };
+	
 };
+
+class Evade : public ISteeringBehavior
+{
+public:
+	Evade() = default;
+	virtual ~Evade() = default;
+	
+	virtual SteeringOutput CalculateSteering(float DeltaT, ASteeringAgent & Agent) override;
+	
+protected:
+	
+	const FColor DebugPredictedLocationColor{ FColor::Red };
+	const FColor DebugEvadingLocationColor{ FColor::Blue };
+	
+};
+
