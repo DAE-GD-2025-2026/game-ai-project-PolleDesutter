@@ -70,10 +70,6 @@ protected:
 	const FColor DebugCircleColor{ FColor::Blue };	
 	const FColor DebugCirclePointColor{ FColor::Green };	
 	
-	const FColor DebugSteeringDirectionColor{ FColor::Magenta };	
-	const FColor DebugSteeringDirectionLeftColor{ FColor::Cyan };	
-	
-	const float DebugSteeringLineLength{ 150.f };	
 	
 };
 
@@ -89,15 +85,9 @@ protected:
 	float SlowRadius{ 700.f };
 	float TargetRadius{ 200.f };
 	
-	const FColor DebugTargetColor{ FColor::Red };	
-	
 	const FColor DebugSlowCircleColor{ FColor::Blue };	
 	const FColor DebugTargetCircleColor{ FColor::Orange };	
 	
-	const FColor DebugSteeringDirectionColor{ FColor::Magenta };	
-	const FColor DebugSteeringDirectionLeftColor{ FColor::Cyan };	
-	
-	const float DebugSteeringLineLength{ 150.f };	
 };
 
 class Pursuit : public ISteeringBehavior
@@ -113,7 +103,6 @@ public:
 protected:
 	FVector2D PredictedPosition;
 	
-	const FColor DebugPredictedLocationColor{ FColor::Red };
 	
 };
 
@@ -127,8 +116,7 @@ public:
 	
 protected:
 	
-	const FColor DebugPredictedLocationColor{ FColor::Red };
-	const FColor DebugEvadingLocationColor{ FColor::Blue };
+	const FColor DebugPredictedLocationColor{ FColor::Blue };
 	
 };
 

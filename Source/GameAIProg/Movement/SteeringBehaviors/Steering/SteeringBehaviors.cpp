@@ -1,6 +1,7 @@
 #include "SteeringBehaviors.h"
 
 #include "GameAIProg/Movement/SteeringBehaviors/SteeringAgent.h"
+#include "Shared/ConstantHelpers.h"
 #include "Shared/ImGuiHelpers.h"
 #include "Shared/MathHelpers.h"
 
@@ -62,15 +63,15 @@ SteeringOutput Wander::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 		}
 		
 		// Debug Steering
-		const FVector2D DirectionEndPoint{ Position + DebugSteeringLineLength * Direction };
-		const FVector2D DirectionLeftEndPoint{ Position + DebugSteeringLineLength * FVector2D(Direction.Y, -Direction.X) };
+		const FVector2D DirectionEndPoint{ Position + ConstantHelpers::DebugDefaultLineLength * Direction };
+		const FVector2D DirectionLeftEndPoint{ Position + ConstantHelpers::DebugDefaultLineLength * FVector2D(Direction.Y, -Direction.X) };
 		
-		DrawDebugLine(World, FVector(Position, 0), FVector(DirectionEndPoint, 0), DebugSteeringDirectionColor);
-		DrawDebugLine(World, FVector(Position, 0), FVector(DirectionLeftEndPoint, 0), DebugSteeringDirectionLeftColor);
+		DrawDebugLine(World, FVector(Position, 0), FVector(DirectionEndPoint, 0), ConstantHelpers::DebugDirectionColor);
+		DrawDebugLine(World, FVector(Position, 0), FVector(DirectionLeftEndPoint, 0), ConstantHelpers::DebugDirectionLeftColor);
 			
 		// Debug Wandering	
-		DrawDebugCircle(World, FVector(CircleCenterPosition, 0), WanderRadius, 12, DebugCircleColor, false, 0.f, 0, 2.f, FVector(1,0,0), FVector(0,1,0), false);
-		DrawDebugPoint(World, FVector(RandPositionOnCircle, 0), 10, DebugCirclePointColor, false, 0.1f);
+		DrawDebugCircle(World, FVector(CircleCenterPosition, 0), WanderRadius, ConstantHelpers::DebugDefaultCircleSegments, DebugCircleColor, false, 0.f, 0, 2.f, FVector(1,0,0), FVector(0,1,0), false);
+		DrawDebugPoint(World, FVector(RandPositionOnCircle, 0), ConstantHelpers::DebugDefaultPointSize, DebugCirclePointColor, false, 0.1f);
 		
 	}
 	
@@ -121,11 +122,11 @@ SteeringOutput Arrive::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 		const FVector2D Position = Agent.GetPosition();
 		
 		// Debug Arrive	
-		DrawDebugCircle(World, FVector(Position, 0), SlowRadius,   12, DebugSlowCircleColor,   false, 0.f, 0, 2.f, FVector(1,0,0), FVector(0,1,0), false);
-		DrawDebugCircle(World, FVector(Position, 0), TargetRadius, 12, DebugTargetCircleColor, false, 0.f, 0, 2.f, FVector(1,0,0), FVector(0,1,0), false);
+		DrawDebugCircle(World, FVector(Position, 0), SlowRadius,   ConstantHelpers::DebugDefaultCircleSegments, DebugSlowCircleColor,   false, 0.f, 0, 2.f, FVector(1,0,0), FVector(0,1,0), false);
+		DrawDebugCircle(World, FVector(Position, 0), TargetRadius, ConstantHelpers::DebugDefaultCircleSegments, DebugTargetCircleColor, false, 0.f, 0, 2.f, FVector(1,0,0), FVector(0,1,0), false);
 		
 		// Debug Target
-		DrawDebugPoint(World, FVector(Target.Position, 0), 10, DebugTargetColor, false, 0.1f);
+		DrawDebugPoint(World, FVector(Target.Position, 0), ConstantHelpers::DebugDefaultPointSize, ConstantHelpers::DebugTargetColor, false, 0.1f);
 		
 	}
 	
@@ -169,7 +170,7 @@ SteeringOutput Pursuit::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 			return Steering;
 		}	
 		
-		DrawDebugPoint(World, FVector(PredictedPosition, 0.f), 100.f, FColor::Red);
+		DrawDebugPoint(World, FVector(PredictedPosition, 0.f), ConstantHelpers::DebugDefaultPointSize, ConstantHelpers::DebugTargetColor);
 	}
 	
 	return Steering;
@@ -208,8 +209,8 @@ SteeringOutput Evade::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 		const FVector2D PredictedPosition = TempPursuit.GetPredictedPosition();
 		const FVector2D EvadePosition = Agent.GetPosition() - (PredictedPosition - Agent.GetPosition());	
 		
-		DrawDebugPoint(World, FVector(PredictedPosition, 0.f), 100.f, DebugPredictedLocationColor);
-		DrawDebugPoint(World, FVector(EvadePosition, 0.f), 100.f, DebugEvadingLocationColor);
+		DrawDebugPoint(World, FVector(PredictedPosition, 0.f), ConstantHelpers::DebugDefaultPointSize, DebugPredictedLocationColor);
+		DrawDebugPoint(World, FVector(EvadePosition, 0.f), ConstantHelpers::DebugDefaultPointSize, ConstantHelpers::DebugTargetColor);
 				
 	}
 	
