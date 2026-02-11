@@ -29,7 +29,13 @@ void ASteeringAgent::Tick(float DeltaTime)
 	if (SteeringBehavior)
 	{
 		SteeringOutput output = SteeringBehavior->CalculateSteering(DeltaTime, *this);
+		
 		AddMovementInput(FVector{output.LinearVelocity, 0.f});
+		
+		float AngularVelocity = FMath::RadiansToDegrees(output.AngularVelocity);
+		AngularVelocity = FMath::Clamp(AngularVelocity, -GetMaxAngularSpeed(), GetMaxAngularSpeed());
+		AddActorLocalRotation(FRotator(0.f, AngularVelocity, 0.f));
+		
 	}
 }
 

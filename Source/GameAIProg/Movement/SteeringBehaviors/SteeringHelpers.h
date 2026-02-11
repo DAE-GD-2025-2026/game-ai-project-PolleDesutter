@@ -131,4 +131,7 @@ namespace SteeringHelpers
 {
 	void DrawDebugDirection(const ASteeringAgent& Agent);
 	
+	void DrawDebugLineFromDirection(const UWorld* InWorld, FVector const& LineStart, float DirectionYawDegrees, float Length, FColor const& Color, bool bPersistentLines = false, float LifeTime=-1.f, uint8 DepthPriority = 0, float Thickness = 0.f);
+	
 }
+

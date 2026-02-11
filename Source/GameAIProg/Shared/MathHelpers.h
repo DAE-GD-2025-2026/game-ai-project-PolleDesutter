@@ -3,6 +3,9 @@
 
 namespace MathHelpers
 {
+	float NormalizeAngleDegrees(float Angle);
+	float NormalizeAngleRadians(float Angle);
+	
 	
 #pragma region EaseIn
 	
@@ -56,7 +59,6 @@ namespace MathHelpers
 	
 	
 #pragma endregion 
-	
 	
 	
 #pragma region EaseOut

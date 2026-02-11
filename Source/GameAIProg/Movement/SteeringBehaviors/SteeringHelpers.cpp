@@ -23,3 +23,22 @@ void SteeringHelpers::DrawDebugDirection(const ASteeringAgent& Agent)
 	DrawDebugLine(World, FVector(AgentPosition, 0), FVector(DirectionLeftEndPoint, 0), ConstantHelpers::DebugDirectionLeftColor);
 				
 }
+
+void SteeringHelpers::DrawDebugLineFromDirection(
+	const UWorld* InWorld, 
+	FVector const& LineStart,
+	float YawDegrees, 
+	float Length, FColor 
+	const& Color, 
+	bool bPersistentLines, 
+	float LifeTime,
+	uint8 DepthPriority, 
+	float Thickness)
+{
+	const float YawRad = FMath::DegreesToRadians(YawDegrees);
+	
+	const FVector DirectionVector = FVector(FMath::Cos(YawRad), FMath::Sin(YawRad), 0.f);
+	const FVector LineEnd = LineStart + DirectionVector * Length;
+	
+	DrawDebugLine(InWorld, LineStart, LineEnd, Color, bPersistentLines, LifeTime, DepthPriority, Thickness);
+}

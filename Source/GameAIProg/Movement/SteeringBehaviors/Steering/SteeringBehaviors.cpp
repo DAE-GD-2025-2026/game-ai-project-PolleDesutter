@@ -36,7 +36,6 @@ SteeringOutput Seek::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 
 SteeringOutput Flee::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 {
-	
 	// Toggle Debug rendering off for temp result
 	const bool DebugEnabled = Agent.GetDebugRenderingEnabled();
 	Agent.SetDebugRenderingEnabled(false);
@@ -75,7 +74,7 @@ SteeringOutput Flee::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 SteeringOutput Wander::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 {
 	SteeringOutput Steering{};
-
+	
 	const float Rotation = Agent.GetRotation();
 	const FVector2D Direction = Agent.GetLinearVelocity().GetSafeNormal();
 	const FVector2D Position = Agent.GetPosition();
@@ -186,8 +185,9 @@ SteeringOutput Pursuit::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 	
 	Steering.LinearVelocity = (PredictedPosition - Agent.GetPosition()).GetSafeNormal();
 	
-	const FString Message = FString::Printf(TEXT("PositionTarget: %s, TimeToReach: %f"), *PredictedPosition.ToString(), TimeToReachTarget);
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, Message);
+	// Todo: Check if this pursuit behavior is how it should be
+	// const FString Message = FString::Printf(TEXT("PositionTarget: %s, TimeToReach: %f"), *PredictedPosition.ToString(), TimeToReachTarget);
+	// GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, Message);
 	
 	// Debug Rendering
 	if (Agent.GetDebugRenderingEnabled())
@@ -244,6 +244,56 @@ SteeringOutput Evade::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 				
 	}
 	
+	return Steering;
+}
+
+SteeringOutput Face::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
+{
+	SteeringOutput Steering{};
+	
+	const FVector2D DirectionToTarget = Target.Position - Agent.GetPosition();
+	
+	const float AngleRadDirectionToTarget = FMath::Atan2(DirectionToTarget.Y, DirectionToTarget.X);
+	const float AngleRadDirectionAgent = FMath::DegreesToRadians(Agent.GetRotation());
+	
+	const float AngleRadRotationToTarget = -1 * MathHelpers::NormalizeAngleRadians(AngleRadDirectionAgent - AngleRadDirectionToTarget);
+	
+	UE_LOG(LogTemp, Warning, TEXT("DirectionToTarget: %f"), FMath::RadiansToDegrees(AngleRadRotationToTarget));
+	
+	if (FMath::IsNearlyZero(AngleRadRotationToTarget))
+	{
+		return Steering;
+	}
+	
+	Steering.AngularVelocity = AngleRadRotationToTarget * DeltaT;	
+	Steering.AngularVelocity *= FMath::DegreesToRadians(Agent.GetMaxAngularSpeed());
+	
+	
+	// Debug Rendering
+	if (Agent.GetDebugRenderingEnabled())
+	{
+		const UWorld* World = Agent.GetWorld();
+		if (!World)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("World is invalid"));
+			return Steering;
+		}	
+		
+		
+		// Draw Direction
+		SteeringHelpers::DrawDebugLineFromDirection(World, FVector(Agent.GetPosition(), 0.f), Agent.GetRotation(), ConstantHelpers::DebugDefaultLineLength, ConstantHelpers::DebugDirectionColor);
+		
+		// Draw Target Position
+		DrawDebugPoint(World, FVector(Target.Position, 0), ConstantHelpers::DebugDefaultPointSize, ConstantHelpers::DebugTargetColor);
+		
+		// Draw Angular Velocity
+		// SteeringHelpers::DrawDebugLineFromDirection(World, FVector(Agent.GetPosition(), 0), Direction, 100.f, ConstantHelpers::DebugTargetColor);
+		
+		// Draw Target Direction
+		SteeringHelpers::DrawDebugLineFromDirection(World, FVector(Agent.GetPosition(), 0.f), FMath::RadiansToDegrees(AngleRadDirectionToTarget), ConstantHelpers::DebugDefaultLineLength, ConstantHelpers::DebugTargetColor);
+		
+	}
+
 	return Steering;
 }
 
