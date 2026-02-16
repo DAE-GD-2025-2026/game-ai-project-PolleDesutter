@@ -30,3 +30,14 @@ void ABaseAgent::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
+void ABaseAgent::SetBodyMaterial(UMaterialInterface* Material) const
+{
+	if (GetMesh()->GetNumMaterials() < BodyMaterialIndex)
+		return;
+	
+	if (!Material)
+		return;
+	
+	GetMesh()->SetMaterial(BodyMaterialIndex, Material);
+}
+

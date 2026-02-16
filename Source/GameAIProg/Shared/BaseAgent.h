@@ -58,4 +58,10 @@ public:
 
 	bool GetDebugRenderingEnabled() const { return bIsDebugRenderingEnabled; }
 	void SetDebugRenderingEnabled(bool IsEnabled) { this->bIsDebugRenderingEnabled = IsEnabled; }
+	
+	void SetBodyMaterial(UMaterialInterface* Material) const;
+	
+private:
+	const int BodyMaterialIndex{ 0 };
+	
 };
