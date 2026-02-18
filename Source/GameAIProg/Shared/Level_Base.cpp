@@ -1,6 +1,5 @@
 ﻿#include "Level_Base.h"
 
-#include "ConstantHelpers.h"
 
 // Sets default values
 ALevel_Base::ALevel_Base()
@@ -22,7 +21,7 @@ void ALevel_Base::BeginPlay()
 	FImGuiModule::Get().GetProperties().SetGamepadInputShared(true);
 	FImGuiModule::Get().GetProperties().SetGamepadNavigationEnabled(false);
 
-	// Spawn our trimworld
+	// Spawn our trim world
 	TrimWorld = GetWorld()->SpawnActor<AWorldTrimVolume>(FVector{0,0,0}, FRotator::ZeroRotator);
 }
 
@@ -38,7 +37,8 @@ void ALevel_Base::Tick(float DeltaTime)
 
 	//Render Target
 	if(VisualizeMouseTarget)
-		DrawDebugPoint(GetWorld(), FVector(MouseTarget.Position, 0), ConstantHelpers::DebugDefaultPointSize, 
-			ConstantHelpers::DebugTargetColor);	
+		DrawDebugPoint(GetWorld(), FVector(MouseTarget.Position, 0), 
+			MouseTargetSize,
+			MouseTargetColor);	
 }
 

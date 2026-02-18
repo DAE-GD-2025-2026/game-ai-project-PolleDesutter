@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ConstantHelpers.h"
 #include "Engine/LevelScriptActor.h"
 
 #include "ImGuiModule.h"
@@ -37,7 +38,9 @@ protected:
 	ImVec2 WindowPos{};
 
 	// Mouse target render toggle
-	bool VisualizeMouseTarget{true}; // unused so far
+	const bool VisualizeMouseTarget{true};
+	const FColor MouseTargetColor{ FColor::White };
+	const float MouseTargetSize{ ConstantHelpers::DebugDefaultPointSize + 5.f };
 
 	UPROPERTY(EditAnywhere)
 	AWorldTrimVolume* TrimWorld{};
