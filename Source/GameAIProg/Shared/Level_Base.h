@@ -40,7 +40,7 @@ protected:
 	bool VisualizeMouseTarget{true}; // unused so far
 
 	UPROPERTY(EditAnywhere)
-	AWorldTrimVolume* TrimWorld{nullptr};
+	AWorldTrimVolume* TrimWorld{};
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TSubclassOf<ASteeringAgent> SteeringAgentClass{};
