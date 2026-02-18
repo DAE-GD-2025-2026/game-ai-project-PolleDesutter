@@ -2,9 +2,10 @@
 #include "CombinedSteeringBehaviors.h"
 #include <algorithm>
 #include "../SteeringAgent.h"
+#include "Compression/lz4.h"
 
-BlendedSteering::BlendedSteering(const std::vector<WeightedBehavior>& WeightedBehaviors)
-	:WeightedBehaviors(WeightedBehaviors)
+BlendedSteering::BlendedSteering(const std::vector<WeightedBehavior>& WeightedBehaviors) :
+	WeightedBehaviors(WeightedBehaviors)
 {};
 
 //****************
@@ -12,25 +13,65 @@ BlendedSteering::BlendedSteering(const std::vector<WeightedBehavior>& WeightedBe
 SteeringOutput BlendedSteering::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 {
 	SteeringOutput BlendedSteering = {};
-	// TODO: Calculate the weighted average steeringbehavior
+		
+	float TotalWeight = 0.0f;
+	int NrValidBehaviors = WeightedBehaviors.size();
+	
+	for (const WeightedBehavior& Behavior : WeightedBehaviors)
+	{
+		if (!Behavior.pBehavior)
+			continue;
+	
+		if (Behavior.Weight == 0.f)
+			continue;
+		
+		SteeringOutput Output = Behavior.pBehavior->CalculateSteering(DeltaT, Agent);
+		
+		if (!Output.IsValid)
+			continue;
+		
+		++NrValidBehaviors;
+		TotalWeight += Behavior.Weight;
+			
+		Output *= Behavior.Weight;
+			
+		BlendedSteering.LinearVelocity += Output.LinearVelocity;
+		BlendedSteering.AngularVelocity += Output.AngularVelocity;
+		
+	}
+	
+	if (TotalWeight <= 0.f)
+		return SteeringOutput();
+		
+	// Normalize Weights
+	BlendedSteering /= TotalWeight;
+	
 	
 	// TODO: Add debug drawing
+	if (Agent.GetDebugRenderingEnabled())
+	{
+		
+		
+		
+	}
+	
+	
 
 	return BlendedSteering;
 }
 
 float* BlendedSteering::GetWeight(ISteeringBehavior* const SteeringBehavior)
 {
-	auto it = find_if(WeightedBehaviors.begin(),
-		WeightedBehaviors.end(),
+	const auto It = 
+		std::ranges::find_if(WeightedBehaviors,
 		[SteeringBehavior](const WeightedBehavior& Elem)
 		{
 			return Elem.pBehavior == SteeringBehavior;
 		}
 	);
 
-	if(it!= WeightedBehaviors.end())
-		return &it->Weight;
+	if(It != WeightedBehaviors.end())
+		return &It->Weight;
 	
 	return nullptr;
 }
