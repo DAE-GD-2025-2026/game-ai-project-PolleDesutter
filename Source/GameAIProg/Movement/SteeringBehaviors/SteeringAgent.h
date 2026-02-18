@@ -70,4 +70,15 @@ public:
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 	void SetSteeringBehavior(ISteeringBehavior* NewSteeringBehavior);
+
+	UMaterialInterface* GetHighlightedMaterial() const { return HighlightedBodyMaterial; }
+	UMaterialInterface* GetNormalMaterial() const { return NormalBodyMaterial; }
+	
+protected:
+	UPROPERTY(EditAnywhere, meta=(AllowPrivateAccess=true, Category="Materials"))
+	UMaterialInterface* HighlightedBodyMaterial;
+	
+	UPROPERTY(EditAnywhere, meta=(AllowPrivateAccess=true, Category="Materials"))
+	UMaterialInterface* NormalBodyMaterial;
+	
 };

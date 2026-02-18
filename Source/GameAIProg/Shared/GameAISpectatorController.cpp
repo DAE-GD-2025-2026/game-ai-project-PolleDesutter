@@ -5,6 +5,7 @@
 
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "GameAIProg.h"
 #include "GameAISpectator.h"
 
 void AGameAISpectatorController::BeginPlay()
@@ -18,7 +19,7 @@ void AGameAISpectatorController::AddInputMappingContexts(TArray<UInputMappingCon
 {
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 	{
-		for (UInputMappingContext* InputMapping : InputMappingContexts)
+		for (const UInputMappingContext* InputMapping : InputMappingContexts)
 		{
 			Subsystem->AddMappingContext(InputMapping, 0);
 		}
@@ -29,7 +30,7 @@ void AGameAISpectatorController::RemoveInputMappingContexts(TArray<UInputMapping
 {
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 	{
-		for (UInputMappingContext* InputMapping : InputMappingContexts)
+		for (const UInputMappingContext* InputMapping : InputMappingContexts)
 		{
 			Subsystem->RemoveMappingContext(InputMapping);
 		}
@@ -43,7 +44,7 @@ void AGameAISpectatorController::SetupInputComponent()
 	// Setup user defined default mappings
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 	{
-		for (UInputMappingContext* InputMapping : DefaultInputMappingContexts)
+		for (const UInputMappingContext* InputMapping : DefaultInputMappingContexts)
 		{
 			Subsystem->AddMappingContext(InputMapping, 0);
 		}
@@ -57,8 +58,9 @@ void AGameAISpectatorController::SetupInputComponent()
 	}
 	// else
 	// {
-	// 	UE_LOG(LogGameAIProg, Error, TEXT("'%s' Failed to find an Enhanced Input Component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
+		// UE_LOGFMT(LogGameAIProg, Error, "{ClassName} Failed to find an Enhanced Input Component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file.", *GetNameSafe(this));
 	// }
+	
 }
 
 void AGameAISpectatorController::OnPossess(APawn* InPawn)
