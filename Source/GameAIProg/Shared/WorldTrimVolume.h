@@ -33,7 +33,9 @@ public:
 
 	void SetTrimWorldSize(float NewSize);
 	float GetTrimWorldSize() const { return TrimWorldSize; }
-
+	
+	UBoxComponent* GetTrimVolume() const { return TrimVolume; }
+	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UBoxComponent* TrimVolume{};
