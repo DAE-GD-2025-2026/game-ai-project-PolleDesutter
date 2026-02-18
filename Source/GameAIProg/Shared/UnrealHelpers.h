@@ -14,6 +14,8 @@ namespace UnrealHelpers
 	static T* GetFirstActorOfClass(const UObject* WorldContextObject);
 	
 	[[nodiscard]] bool IsPositionInsideVolume(const UBoxComponent& BoxComponent, const FVector& Position);
+	
+	[[nodiscard]] bool GetMouseWorldPosition(const UObject* WorldContextObject, const APlayerController* PlayerController, FVector& OutPosition);
 
 	
 }
