@@ -38,7 +38,7 @@ protected:
 	ImVec2 WindowPos{};
 
 	// Mouse target render toggle
-	const bool VisualizeMouseTarget{true};
+	bool VisualizeMouseTarget{ false };
 	const FColor MouseTargetColor{ FColor::White };
 	const float MouseTargetSize{ ConstantHelpers::DebugDefaultPointSize + 5.f };
 
