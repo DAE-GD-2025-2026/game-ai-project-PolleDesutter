@@ -2,12 +2,15 @@
 
 #pragma once
 
+#include <memory>
+
 #include "CoreMinimal.h"
 #include "CombinedSteeringBehaviors.h"
 #include "GameAIProg/Shared/Level_Base.h"
 #include "GameAIProg/Movement/SteeringBehaviors/Steering/SteeringBehaviors.h"
 #include "GameAIProg/Movement/SteeringBehaviors/SteeringAgent.h"
 #include "Level_CombinedSteering.generated.h"
+
 
 UCLASS()
 class GAMEAIPROG_API ALevel_CombinedSteering : public ALevel_Base
@@ -28,9 +31,30 @@ protected:
 	virtual void BeginDestroy() override;
 
 private:
-	//Datamembers
+	// Data members
 	bool UseMouseTarget = false;
 	bool CanDebugRender = false;
+	
+	bool IsHoldingLeftButton = false;
+	
+	
+	// Steering Behaviors
+	std::unique_ptr<Seek> SeekBehavior{};
+	std::unique_ptr<Wander> WanderBehavior{};
+	std::unique_ptr<Evade> EvadeBehavior{};
+	
+	std::unique_ptr<BlendedSteering> DrunkBlendedSteering{};
+	std::unique_ptr<PrioritySteering> EvadePrioritySteering{};
+	
+	UPROPERTY()
+	ASteeringAgent* DrunkAgent{};
+	
+	UPROPERTY()
+	TArray<ASteeringAgent*> EvadingAgents{};
+
+	
+	void HandleLeftMouseInput(const APlayerController* PlayerController, const FVector& MouseWorldPosition);
 
 	
 };
+
