@@ -9,6 +9,7 @@ bool UnrealHelpers::IsPositionInsideVolume(const UBoxComponent& BoxComponent, co
 	return Box.IsInside(Position);
 }
 
+
 bool UnrealHelpers::GetMouseWorldPosition(const UObject* WorldContextObject, const APlayerController* PlayerController, FVector& OutPosition)
 {
 	if (!WorldContextObject)
@@ -45,4 +46,5 @@ bool UnrealHelpers::GetMouseWorldPosition(const UObject* WorldContextObject, con
 	return HasHit;
 			
 }
+
 
