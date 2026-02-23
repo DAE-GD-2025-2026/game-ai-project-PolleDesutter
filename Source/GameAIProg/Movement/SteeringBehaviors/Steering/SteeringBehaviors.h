@@ -2,6 +2,8 @@
 
 #include <Movement/SteeringBehaviors/SteeringHelpers.h>
 
+#include "Shared/ConstantHelpers.h"
+
 class ASteeringAgent;
 
 // SteeringBehavior base, all steering behaviors should derive from this.
@@ -18,8 +20,13 @@ public:
 	
 	template<class T, std::enable_if_t<std::is_base_of_v<ISteeringBehavior, T>>* = nullptr>
 	T* As()
-	{ return static_cast<T*>(this); }
+	{
+		return static_cast<T*>(this);
+	}
 
+	
+	virtual FString GetClassName() = 0;
+	
 protected:
 	FTargetData Target;
 };
@@ -33,6 +40,7 @@ public:
 	virtual ~Seek() override = default;
 	
 	virtual SteeringOutput CalculateSteering(float DeltaT, ASteeringAgent & Agent) override;
+	virtual FString GetClassName() override { return CLASS_NAME_FSTRING; }
 	
 };
 
@@ -43,6 +51,7 @@ public:
 	virtual ~Flee() override = default;
 	
 	virtual SteeringOutput CalculateSteering(float DeltaT, ASteeringAgent & Agent) override;
+	virtual FString GetClassName() override { return CLASS_NAME_FSTRING; }
 	
 protected:
 	const FColor DebugFleePointColor{ FColor::Blue };
@@ -56,6 +65,7 @@ public:
 	virtual ~Wander() override = default;
 	
 	virtual SteeringOutput CalculateSteering(float DeltaT, ASteeringAgent & Agent) override;
+	virtual FString GetClassName() override { return CLASS_NAME_FSTRING; }
 	
 	void SetWanderOffset(float Offset) { OffsetDistance = Offset; }
 	void SetWanderRadius(float Radius) { WanderRadius = Radius; }
@@ -80,6 +90,7 @@ public:
 	virtual ~Arrive() override = default;
 	
 	virtual SteeringOutput CalculateSteering(float DeltaT, ASteeringAgent & Agent) override;
+	virtual FString GetClassName() override { return CLASS_NAME_FSTRING; }
 	
 protected:
 	float SlowRadius{ 700.f };
@@ -97,6 +108,7 @@ public:
 	virtual ~Pursuit() override = default;
 	
 	virtual SteeringOutput CalculateSteering(float DeltaT, ASteeringAgent & Agent) override;
+	virtual FString GetClassName() override { return CLASS_NAME_FSTRING; }
 	
 	FVector2D GetPredictedPosition() const { return PredictedPosition; }
 	
@@ -114,6 +126,7 @@ public:
 	virtual ~Evade() override = default;
 	
 	virtual SteeringOutput CalculateSteering(float DeltaT, ASteeringAgent & Agent) override;
+	virtual FString GetClassName() override { return CLASS_NAME_FSTRING; }
 	
 protected:
 	const FColor DebugPredictedLocationColor{ FColor::Blue };
@@ -127,6 +140,7 @@ public:
 	virtual ~Face() override = default;
 	
 	virtual SteeringOutput CalculateSteering(float DeltaT, ASteeringAgent & Agent) override;
+	virtual FString GetClassName() override { return CLASS_NAME_FSTRING; }
 	
 };
 
