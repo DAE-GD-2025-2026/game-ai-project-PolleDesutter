@@ -9,10 +9,6 @@
 #include "Containers/StringConv.h"
 
 
-// #define CLASS_NAME_FSTRING UnrealHelpers::GetClassNameFromFunction(__FUNCTION__)
-// #define FUNCTION_NAME_FSTRING UnrealHelpers::GetFunctionNameFromFunction(__FUNCTION__)
-
-
 namespace UnrealHelpers
 {
 	template <typename T>	
@@ -39,6 +35,7 @@ namespace UnrealHelpers
 	inline FString GetClassNameFromFunction(const char* CharString);
 	inline FString GetFunctionNameFromFunction(const char* CharString);
 	
+	void SpawnAndAttachTextToActor(const UObject* WorldContextObject, AActor* Actor);
 	 
 }
 

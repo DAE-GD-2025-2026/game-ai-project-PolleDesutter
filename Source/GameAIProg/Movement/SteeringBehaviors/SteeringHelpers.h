@@ -3,6 +3,8 @@
 #include "CoreMinimal.h"
 #include "SteeringHelpers.generated.h"
 
+
+class ISteeringBehavior;
 class ASteeringAgent;
 
 //SteeringParams (alias TargetData)

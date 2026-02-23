@@ -3,6 +3,7 @@
 #include "SteeringAgent.h"
 #include "Shared/ConstantHelpers.h"
 
+
 void SteeringHelpers::DrawDebugDirection(const ASteeringAgent& Agent)
 {
 	const UWorld* World = Agent.GetWorld();
@@ -42,3 +43,4 @@ void SteeringHelpers::DrawDebugLineFromDirection(
 	
 	DrawDebugLine(InWorld, LineStart, LineEnd, Color, bPersistentLines, LifeTime, DepthPriority, Thickness);
 }
+

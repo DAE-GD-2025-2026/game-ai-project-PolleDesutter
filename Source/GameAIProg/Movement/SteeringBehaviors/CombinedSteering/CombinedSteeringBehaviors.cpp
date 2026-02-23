@@ -14,8 +14,6 @@ BlendedSteering::BlendedSteering(const std::vector<WeightedBehavior>& WeightedBe
 
 SteeringOutput BlendedSteering::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 {
-	Agent.SetIsAutoOrienting(true);
-
 	SteeringOutput BlendedSteering = {};
 		
 	float TotalWeight = 0.0f;
@@ -106,7 +104,6 @@ PrioritySteering::PrioritySteering(const std::vector<ISteeringBehavior*>& Priori
 
 SteeringOutput PrioritySteering::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 {
-	Agent.SetIsAutoOrienting(true);
 	SteeringOutput Steering = {};
 
 	for (ISteeringBehavior* const Behavior : PriorityBehaviors)

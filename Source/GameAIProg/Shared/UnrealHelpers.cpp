@@ -1,5 +1,7 @@
 #include "UnrealHelpers.h"
 
+#include "Components/TextRenderComponent.h"
+
 
 bool UnrealHelpers::IsPositionInsideVolume(const UBoxComponent& BoxComponent, const FVector& Position)
 {
@@ -45,6 +47,38 @@ bool UnrealHelpers::GetMouseWorldPosition(const UObject* WorldContextObject, con
 
 	return HasHit;
 			
+}
+
+void UnrealHelpers::SpawnAndAttachTextToActor(const UObject* WorldContextObject, AActor* Actor)
+{
+	if (!WorldContextObject)
+	{
+		UE_LOG(LogTemp, Error, TEXT("WorldContextObject is nullptr"));
+		return;
+	}
+	
+	if (!Actor)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Actor is nullptr"));
+		return;
+	}
+	
+	auto TextRenderComp = NewObject<UTextRenderComponent>(Actor);	
+	if (!TextRenderComp)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("TextRenderComp is nullptr"));
+		return;
+	}
+	
+	// Attach to root of actor
+	TextRenderComp->SetupAttachment(Actor->GetRootComponent());
+	
+	// Register component with actor
+	TextRenderComp->RegisterComponent();
+	
+	// Set default text
+	TextRenderComp->SetText(INVTEXT("Default"));
+	
 }
 
 

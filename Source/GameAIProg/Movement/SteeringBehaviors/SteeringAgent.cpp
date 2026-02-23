@@ -3,6 +3,7 @@
 #include "SteeringAgent.h"
 
 #include "AIController.h"
+#include "Components/TextRenderComponent.h"
 
 
 // Sets default values
@@ -16,6 +17,33 @@ ASteeringAgent::ASteeringAgent()
 void ASteeringAgent::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	UnrealHelpers::SpawnAndAttachTextToActor(GetWorld(), this);
+	
+	UActorComponent* ActorComp = GetComponentByClass(UTextRenderComponent::StaticClass());
+	if (!ActorComp)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("TextRenderComponent not found"));
+		return;		
+	}
+	
+	TextRenderComponent = Cast<UTextRenderComponent>(ActorComp);
+	if (!TextRenderComponent)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("TextRenderComponent couldn't be cast"));
+		return;		
+	}
+	
+	TextRenderComponent->SetWorldSize(64.f);	
+	
+	TextRenderComponent->SetHorizontalAlignment(EHorizTextAligment::EHTA_Center);
+	TextRenderComponent->SetVerticalAlignment(EVerticalTextAligment::EVRTA_TextCenter);
+	
+	TextRenderComponent->SetAbsolute(true, true, false);
+	TextRenderComponent->SetRelativeRotation(LockedTextRenderRelativeRotation);
+	
+	TextRenderComponent->SetVisibility(DebugBehaviorTextEnabled);
+	
 }
 
 void ASteeringAgent::BeginDestroy()
@@ -27,6 +55,12 @@ void ASteeringAgent::BeginDestroy()
 void ASteeringAgent::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+	if (TextRenderComponent)
+	{
+		const FVector2D RootLocation2D = FVector2D(GetActorLocation().X, GetActorLocation().Y);
+		TextRenderComponent->SetWorldLocation(FVector(RootLocation2D, 0.f) + LockedTextRenderRelativeLocation);
+	}
 
 	if (SteeringBehavior)
 	{
@@ -68,5 +102,33 @@ void ASteeringAgent::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 void ASteeringAgent::SetSteeringBehavior(ISteeringBehavior* NewSteeringBehavior)
 {
 	SteeringBehavior = NewSteeringBehavior;
+	
+	if (SteeringBehavior->GetClassName() == "Face")
+	{
+		SetIsAutoOrienting(false);
+	}
+	else
+	{
+		SetIsAutoOrienting(true);
+	}
+	
+	if (TextRenderComponent)
+	{
+		TextRenderComponent->SetText(FText::FromString(SteeringBehavior->GetClassName()));
+	}
+	
+}
+
+void ASteeringAgent::SetDebugBehaviorText(bool DebugBehaviorText)
+{
+	DebugBehaviorTextEnabled = DebugBehaviorText;
+	
+	if (!TextRenderComponent)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("TextRenderComponent not found"));
+		return;
+	}
+	
+	TextRenderComponent->SetVisibility(DebugBehaviorTextEnabled);
 }
 
