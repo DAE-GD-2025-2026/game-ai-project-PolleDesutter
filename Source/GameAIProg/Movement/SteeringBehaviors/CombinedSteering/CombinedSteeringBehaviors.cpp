@@ -1,17 +1,21 @@
-
 #include "CombinedSteeringBehaviors.h"
 #include <algorithm>
-#include "../SteeringAgent.h"
-#include "Compression/lz4.h"
 
+#include "Movement/SteeringBehaviors/SteeringAgent.h"
+#include "Shared/ConversionHelpers.h"
+
+
+//****************
+//BLENDED STEERING
 BlendedSteering::BlendedSteering(const std::vector<WeightedBehavior>& WeightedBehaviors) :
 	WeightedBehaviors(WeightedBehaviors)
 {};
 
-//****************
-//BLENDED STEERING
+
 SteeringOutput BlendedSteering::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 {
+	Agent.SetIsAutoOrienting(true);
+
 	SteeringOutput BlendedSteering = {};
 		
 	float TotalWeight = 0.0f;
@@ -20,15 +24,21 @@ SteeringOutput BlendedSteering::CalculateSteering(float DeltaT, ASteeringAgent& 
 	for (const WeightedBehavior& Behavior : WeightedBehaviors)
 	{
 		if (!Behavior.pBehavior)
+		{
 			continue;
+		}
 	
 		if (Behavior.Weight == 0.f)
+		{
 			continue;
+		}
 		
 		SteeringOutput Output = Behavior.pBehavior->CalculateSteering(DeltaT, Agent);
 		
 		if (!Output.IsValid)
+		{
 			continue;
+		}
 		
 		++NrValidBehaviors;
 		TotalWeight += Behavior.Weight;
@@ -41,7 +51,9 @@ SteeringOutput BlendedSteering::CalculateSteering(float DeltaT, ASteeringAgent& 
 	}
 	
 	if (TotalWeight <= 0.f)
+	{
 		return SteeringOutput();
+	}
 		
 	// Normalize Weights
 	BlendedSteering /= TotalWeight;
@@ -52,11 +64,9 @@ SteeringOutput BlendedSteering::CalculateSteering(float DeltaT, ASteeringAgent& 
 	{
 		
 		
-		
 	}
-	
-	
 
+	
 	return BlendedSteering;
 }
 
@@ -70,26 +80,44 @@ float* BlendedSteering::GetWeight(ISteeringBehavior* const SteeringBehavior)
 		}
 	);
 
-	if(It != WeightedBehaviors.end())
-		return &It->Weight;
+	if(It == WeightedBehaviors.end())
+	{
+		return nullptr;
+	}
 	
-	return nullptr;
+	return &It->Weight;
 }
+
 
 //*****************
 //PRIORITY STEERING
+PrioritySteering::PrioritySteering(const std::vector<ISteeringBehavior*>& PrioritySteeringBehaviors) :
+	PriorityBehaviors(PrioritySteeringBehaviors)
+{
+	if (!PriorityBehaviors.empty())
+	{
+		CurrentBehavior = PriorityBehaviors.front();
+		
+		const FString BehaviorClassName = CurrentBehavior->GetClassName();
+		UE_LOGFMT(LogTemp, Warning, "BehaviorClassName: {Name}", BehaviorClassName);
+	}
+	
+}
+
 SteeringOutput PrioritySteering::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 {
+	Agent.SetIsAutoOrienting(true);
 	SteeringOutput Steering = {};
 
-	for (ISteeringBehavior* const pBehavior : m_PriorityBehaviors)
+	for (ISteeringBehavior* const Behavior : PriorityBehaviors)
 	{
-		Steering = pBehavior->CalculateSteering(DeltaT, Agent);
+		Steering = Behavior->CalculateSteering(DeltaT, Agent);
 
 		if (Steering.IsValid)
+		{
 			break;
+		}
 	}
-
-	//If non of the behavior return a valid output, last behavior is returned
+	
 	return Steering;
 }
