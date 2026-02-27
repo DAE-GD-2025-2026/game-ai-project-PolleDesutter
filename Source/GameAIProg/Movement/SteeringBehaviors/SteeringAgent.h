@@ -76,8 +76,12 @@ public:
 	UMaterialInterface* GetHighlightedMaterial() const { return HighlightedBodyMaterial; }
 	UMaterialInterface* GetNormalMaterial() const { return NormalBodyMaterial; }
 	
-	bool GetDebugBehaviorText() const{ return DebugBehaviorTextEnabled; };
-	void SetDebugBehaviorText(bool DebugBehaviorText);
+	bool GetDebugBehaviorEnabled() const{ return DebugBehaviorTextEnabled; };
+	void SetDebugBehaviorEnabled(bool DebugBehaviorEnabled);
+	
+	FText GetDebugBehaviorText() const;
+	void SetDebugBehaviorText(const FString& DebugBehaviorText) const;
+	void SetDebugBehaviorTextColor(const FColor& DebugBehaviorTextColor) const;
 	
 	
 protected:

@@ -119,9 +119,9 @@ void ASteeringAgent::SetSteeringBehavior(ISteeringBehavior* NewSteeringBehavior)
 	
 }
 
-void ASteeringAgent::SetDebugBehaviorText(bool DebugBehaviorText)
+void ASteeringAgent::SetDebugBehaviorEnabled(bool DebugBehaviorEnabled)
 {
-	DebugBehaviorTextEnabled = DebugBehaviorText;
+	DebugBehaviorTextEnabled = DebugBehaviorEnabled;
 	
 	if (!TextRenderComponent)
 	{
@@ -130,5 +130,38 @@ void ASteeringAgent::SetDebugBehaviorText(bool DebugBehaviorText)
 	}
 	
 	TextRenderComponent->SetVisibility(DebugBehaviorTextEnabled);
+}
+
+FText ASteeringAgent::GetDebugBehaviorText() const
+{
+	if (!TextRenderComponent)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("TextRenderComponent not found"));
+		return FText();
+	}
+	
+	return TextRenderComponent->Text;
+}
+
+void ASteeringAgent::SetDebugBehaviorText(const FString& DebugBehaviorText) const
+{
+	if (!TextRenderComponent)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("TextRenderComponent not found"));
+		return;
+	}
+	
+	TextRenderComponent->SetText(FText::FromString(DebugBehaviorText));
+}
+
+void ASteeringAgent::SetDebugBehaviorTextColor(const FColor& DebugBehaviorTextColor) const
+{
+	if (!TextRenderComponent)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("TextRenderComponent not found"));
+		return;
+	}
+	
+	TextRenderComponent->SetTextRenderColor(DebugBehaviorTextColor);
 }
 

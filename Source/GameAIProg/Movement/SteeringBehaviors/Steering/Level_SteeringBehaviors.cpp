@@ -43,7 +43,7 @@ void ALevel_SteeringBehaviors::Tick(float DeltaTime)
 	ImGui::Indent();
 	ImGui::Text("LMB: place target");
 	ImGui::Text("WASD: move cam");
-	ImGui::Text("Scrollwheel: zoom cam");
+	ImGui::Text("Scroll wheel: zoom cam");
 	ImGui::Unindent();
 	
 	ImGui::Spacing();
@@ -114,7 +114,7 @@ void ALevel_SteeringBehaviors::Tick(float DeltaTime)
 			ImGui::PushItemWidth(100);
 
 			// Add the names of your steering behaviors
-			if (ImGui::Combo("", &a.SelectedBehavior, "Seek\0Flee\0Wander\0Arrive\0Pursuit\0Evade\0Face", 4))
+			if (ImGui::Combo("", &a.SelectedBehavior, "Seek\0Flee\0Wander\0Arrive\0Pursuit\0Evade\0Evade Nearby\0Face\0", 5))
 			{
 				bBehaviourModified = true;
 			}
@@ -162,6 +162,12 @@ void ALevel_SteeringBehaviors::Tick(float DeltaTime)
 			if (ImGui::Checkbox("Debug Rendering", &isChecked))
 			{
 				a.Agent->SetDebugRenderingEnabled(isChecked);
+			}
+			
+			isChecked = a.Agent->GetDebugBehaviorEnabled();
+			if (ImGui::Checkbox("Debug Behavior", &isChecked))
+			{
+				a.Agent->SetDebugBehaviorEnabled(isChecked);
 			}
 
 			ImGui::Unindent();
@@ -247,6 +253,10 @@ void ALevel_SteeringBehaviors::SetAgentBehavior(ImGui_Agent& Agent)
 		
 	case BehaviorTypes::Evade:
 		Agent.Behavior = std::make_unique<Evade>();
+		break;
+		
+	case BehaviorTypes::EvadeNearby:
+		Agent.Behavior = std::make_unique<EvadeNearby>();
 		break;
 		
 	case BehaviorTypes::Face:

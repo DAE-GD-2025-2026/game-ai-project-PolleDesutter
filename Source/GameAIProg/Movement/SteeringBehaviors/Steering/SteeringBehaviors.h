@@ -133,6 +133,23 @@ protected:
 	
 };
 
+class EvadeNearby : public ISteeringBehavior
+{
+public:
+	EvadeNearby() = default;
+	virtual ~EvadeNearby() override = default;
+	
+	virtual SteeringOutput CalculateSteering(float DeltaT, ASteeringAgent& Agent) override;
+	virtual FString GetClassName() override { return CLASS_NAME_FSTRING; }
+	
+	float EvadeRadius{ 300.f };
+
+protected:
+	const FColor DebugPredictedLocationColor{ FColor::Blue };
+	const FColor DebugEvadeCircleColor{ FColor::Green };
+	
+};
+
 class Face : public ISteeringBehavior
 {
 public:

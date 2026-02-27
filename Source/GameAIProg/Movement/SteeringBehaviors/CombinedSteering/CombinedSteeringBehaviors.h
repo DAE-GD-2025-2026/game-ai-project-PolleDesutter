@@ -16,10 +16,11 @@ public:
 		WeightedBehavior(ISteeringBehavior* const pBehavior, float Weight) :
 			pBehavior(pBehavior),
 			Weight(Weight)
-		{};
+		{
+		};
 	};
 
-	BlendedSteering(const std::vector<WeightedBehavior>& WeightedBehaviors);
+	explicit BlendedSteering(const std::vector<WeightedBehavior>& WeightedBehaviors);
 
 	void AddBehaviour(const WeightedBehavior& WeightedBehavior) { WeightedBehaviors.push_back(WeightedBehavior); }
 	virtual SteeringOutput CalculateSteering(float DeltaT, ASteeringAgent& Agent) override;
@@ -32,6 +33,7 @@ public:
 
 private:
 	std::vector<WeightedBehavior> WeightedBehaviors = {};
+	const FColor CurrentBehaviorColor{ FColor::Cyan };	
 
 	// using ISteeringBehavior::SetTarget; // made private because targets need to be set on the individual behaviors, not the combined behavior
 };
@@ -41,19 +43,20 @@ private:
 class PrioritySteering final: public ISteeringBehavior
 {
 public:
-	PrioritySteering(const std::vector<ISteeringBehavior*>& PrioritySteeringBehaviors);
+	explicit PrioritySteering(const std::vector<ISteeringBehavior*>& PrioritySteeringBehaviors);
 
 	void AddBehaviour(ISteeringBehavior* const Behavior) { PriorityBehaviors.push_back(Behavior); }
 	virtual SteeringOutput CalculateSteering(float DeltaT, ASteeringAgent& Agent) override;
-	virtual FString GetClassName() override { return CLASS_NAME_FSTRING; }
+	virtual FString GetClassName() override { return "Priority: " + (CurrentBehavior ? CurrentBehavior->GetClassName() : "None"); }
 
-	
 	bool CanPrintCurrentBehavior{ false };	
+	
 	
 private:
 	std::vector<ISteeringBehavior*> PriorityBehaviors = {};
 	
 	ISteeringBehavior* CurrentBehavior = nullptr;
+	const FColor CurrentBehaviorColor{ FColor::Orange };	
 	
 
 	// using ISteeringBehavior::SetTarget; // made private because targets need to be set on the individual behaviors, not the combined behavior

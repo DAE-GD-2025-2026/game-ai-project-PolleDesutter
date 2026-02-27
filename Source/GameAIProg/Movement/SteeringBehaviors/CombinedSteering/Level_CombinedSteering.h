@@ -34,6 +34,7 @@ private:
 	// Data members
 	bool UseMouseTarget = false;
 	bool CanDebugRender = false;
+	bool CanDebugBehavior = false;
 	
 	bool IsHoldingLeftButton = false;
 	
@@ -41,16 +42,19 @@ private:
 	// Steering Behaviors
 	std::unique_ptr<Seek> SeekBehavior{};
 	std::unique_ptr<Wander> WanderBehavior{};
-	std::unique_ptr<Evade> EvadeBehavior{};
+	std::vector<std::unique_ptr<EvadeNearby>> EvadeNearbyBehaviors{};	
+	// multiple needed bc can't set a different target for an agent with only one steering behavior
 	
 	std::unique_ptr<BlendedSteering> DrunkBlendedSteering{};
-	std::unique_ptr<PrioritySteering> EvadePrioritySteering{};
+	std::vector<std::unique_ptr<PrioritySteering>> EvadePrioritySteerings{};
 	
 	UPROPERTY()
 	ASteeringAgent* DrunkAgent{};
 	
 	UPROPERTY()
 	TArray<ASteeringAgent*> EvadingAgents{};
+	
+	TArray<FVector2D> EvadingAgentsPositions{};
 
 	
 	void HandleLeftMouseInput(const APlayerController* PlayerController, const FVector& MouseWorldPosition);

@@ -15,6 +15,8 @@ BlendedSteering::BlendedSteering(const std::vector<WeightedBehavior>& WeightedBe
 SteeringOutput BlendedSteering::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 {
 	SteeringOutput BlendedSteering = {};
+	
+	Agent.SetDebugBehaviorTextColor(CurrentBehaviorColor);
 		
 	float TotalWeight = 0.0f;
 	int NrValidBehaviors = WeightedBehaviors.size();
@@ -57,10 +59,24 @@ SteeringOutput BlendedSteering::CalculateSteering(float DeltaT, ASteeringAgent& 
 	BlendedSteering /= TotalWeight;
 	
 	
-	// TODO: Add debug drawing
 	if (Agent.GetDebugRenderingEnabled())
 	{
+		const UWorld* World = Agent.GetWorld();
+		if (!World)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("World is invalid"));
+			return BlendedSteering;
+		}
+				
+		SteeringHelpers::DrawDebugDirection(Agent);
 		
+		// Draw Target
+		DrawDebugPoint(World, FVector(Target.Position, 0), ConstantHelpers::DebugDefaultPointSize, ConstantHelpers::DebugTargetColor);
+		
+		
+		SteeringHelpers::DrawDebugLineFromDirection(World, FVector(Agent.GetPosition(), 0.f),
+			Agent.GetRotation(), ConstantHelpers::DebugDefaultLineLength, 
+			FColor::White);
 		
 	}
 
@@ -95,9 +111,6 @@ PrioritySteering::PrioritySteering(const std::vector<ISteeringBehavior*>& Priori
 	if (!PriorityBehaviors.empty())
 	{
 		CurrentBehavior = PriorityBehaviors.front();
-		
-		const FString BehaviorClassName = CurrentBehavior->GetClassName();
-		UE_LOGFMT(LogTemp, Warning, "BehaviorClassName: {Name}", BehaviorClassName);
 	}
 	
 }
@@ -112,9 +125,18 @@ SteeringOutput PrioritySteering::CalculateSteering(float DeltaT, ASteeringAgent&
 
 		if (Steering.IsValid)
 		{
+			// If new Behavior is selected
+			if (CurrentBehavior != Behavior)
+			{
+				CurrentBehavior = Behavior;
+				Agent.SetDebugBehaviorText(GetClassName());
+				Agent.SetDebugBehaviorTextColor(CurrentBehaviorColor);
+			}
+			
 			break;
 		}
 	}
 	
 	return Steering;
 }
+

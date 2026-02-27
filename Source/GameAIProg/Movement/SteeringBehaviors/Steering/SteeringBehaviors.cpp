@@ -249,6 +249,55 @@ SteeringOutput Evade::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 	return Steering;
 }
 
+SteeringOutput EvadeNearby::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
+{
+	// Toggle Debug rendering off for temp result
+	const bool DebugEnabled = Agent.GetDebugRenderingEnabled();
+	Agent.SetDebugRenderingEnabled(false);
+	
+	// Set Steering
+	Pursuit TempPursuit{};
+	TempPursuit.SetTarget(Target);
+	SteeringOutput Steering = TempPursuit.CalculateSteering(DeltaT, Agent);
+	
+	// Toggle Debug rendering to previous value
+	Agent.SetDebugRenderingEnabled(DebugEnabled);
+	
+	// Go the opposite direction of the pursuit direction
+	Steering.LinearVelocity *= -1;
+	
+	if (FVector2D::Distance(Agent.GetPosition(), Target.Position) >= EvadeRadius)
+	{
+		Steering.IsValid = false;
+		return Steering;
+	}
+
+	if (Agent.GetDebugRenderingEnabled())
+	{
+		const UWorld* World = Agent.GetWorld();
+		if (!World)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("World is invalid"));
+			return Steering;
+		}	
+		
+		const FVector2D PredictedPosition = TempPursuit.GetPredictedPosition();
+		const FVector2D EvadePosition = Agent.GetPosition() - (PredictedPosition - Agent.GetPosition());	
+		
+		DrawDebugPoint(World, FVector(PredictedPosition, 0.f), ConstantHelpers::DebugDefaultPointSize, DebugPredictedLocationColor);
+		DrawDebugPoint(World, FVector(EvadePosition, 0.f), ConstantHelpers::DebugDefaultPointSize, ConstantHelpers::DebugTargetColor);
+		
+		DrawDebugCircle(World, FVector(Agent.GetPosition(), 0), EvadeRadius, ConstantHelpers::DebugDefaultCircleSegments, 
+			DebugEvadeCircleColor, false, 0.f, 0, 5.f, FVector(1,0,0), FVector(0,1,0), false);
+		
+		SteeringHelpers::DrawDebugLineFromDirection(World, FVector(Agent.GetPosition(), 0.f),
+			Agent.GetRotation(), ConstantHelpers::DebugDefaultLineLength, 
+			FColor::White);
+	}
+	
+	return Steering;
+}
+
 SteeringOutput Face::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 {
 	SteeringOutput Steering{};
