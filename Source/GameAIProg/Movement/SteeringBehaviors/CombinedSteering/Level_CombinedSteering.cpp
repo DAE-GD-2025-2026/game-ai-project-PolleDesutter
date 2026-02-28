@@ -271,8 +271,6 @@ void ALevel_CombinedSteering::Tick(float DeltaTime)
 		return;
 	}
 
-	// TODO: implement Make sure to also evade the wanderer
-
 	for (int i = 0; i < EvadingAgents.Num(); ++i)
 	{
 		EvadingAgentsPositions[i] = EvadingAgents[i]->GetPosition();

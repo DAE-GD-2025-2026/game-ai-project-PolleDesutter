@@ -185,9 +185,6 @@ SteeringOutput Pursuit::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 	
 	Steering.LinearVelocity = (PredictedPosition - Agent.GetPosition()).GetSafeNormal();
 	
-	// Todo: Check if this pursuit behavior is how it should be
-	// const FString Message = FString::Printf(TEXT("PositionTarget: %s, TimeToReach: %f"), *PredictedPosition.ToString(), TimeToReachTarget);
-	
 	// Debug Rendering
 	if (Agent.GetDebugRenderingEnabled())
 	{
