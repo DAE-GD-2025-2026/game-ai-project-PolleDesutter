@@ -83,13 +83,24 @@ public:
 	void SetDebugBehaviorText(const FString& DebugBehaviorText) const;
 	void SetDebugBehaviorTextColor(const FColor& DebugBehaviorTextColor) const;
 	
+	UMaterialInterface* GetNormalBodyMaterial() const { return NormalBodyMaterial; }
+	UMaterialInterface* GetHighlightedBodyMaterial() const { return HighlightedBodyMaterial; }
+	UMaterialInterface* GetRedBodyMaterial() const { return RedBodyMaterial; }
+	UMaterialInterface* GetBlueBodyMaterial() const { return BlueBodyMaterial; }
+	
 	
 protected:
+	UPROPERTY(EditAnywhere, meta=(AllowPrivateAccess=true, Category="Materials"))
+	UMaterialInterface* NormalBodyMaterial;
+	
 	UPROPERTY(EditAnywhere, meta=(AllowPrivateAccess=true, Category="Materials"))
 	UMaterialInterface* HighlightedBodyMaterial;
 	
 	UPROPERTY(EditAnywhere, meta=(AllowPrivateAccess=true, Category="Materials"))
-	UMaterialInterface* NormalBodyMaterial;
+	UMaterialInterface* RedBodyMaterial;
+	
+	UPROPERTY(EditAnywhere, meta=(AllowPrivateAccess=true, Category="Materials"))
+	UMaterialInterface* BlueBodyMaterial;
 	
 	UPROPERTY()
 	UTextRenderComponent* TextRenderComponent;

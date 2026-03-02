@@ -101,6 +101,12 @@ void ASteeringAgent::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 void ASteeringAgent::SetSteeringBehavior(ISteeringBehavior* NewSteeringBehavior)
 {
+	if (!NewSteeringBehavior)
+	{
+		UE_LOG(LogTemp, Log, TEXT("NewSteeringBehavior is nullptr"));
+		return;
+	}
+	
 	SteeringBehavior = NewSteeringBehavior;
 	
 	if (SteeringBehavior->GetClassName() == "Face")
