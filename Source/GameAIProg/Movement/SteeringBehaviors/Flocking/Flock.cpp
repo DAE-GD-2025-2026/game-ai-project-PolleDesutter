@@ -80,8 +80,6 @@ Flock::Flock(UWorld* pWorld, TSubclassOf<ASteeringAgent> AgentClass, int FlockSi
 
 	pPrioritySteering = std::make_unique<PrioritySteering>(PrioritySteeringBehaviors);
 
-	// TODO: initialize the flock and the memory pool
-
 	for (int i = 0; i < FlockSize; ++i)
 	{
 		// // We don't care if bTrimWorld is set or not,
@@ -124,7 +122,6 @@ Flock::~Flock()
 
 void Flock::Tick(float DeltaTime)
 {
-	// TODO: update the flock
 	if (pEvadeNearbyBehavior)
 	{
 		FTargetData TargetData;
@@ -136,7 +133,6 @@ void Flock::Tick(float DeltaTime)
 		pEvadeNearbyBehavior->SetTarget(TargetData);
 	}
 
-	// TODO: for every agent:
 	for (auto pAgent : Agents)
 	{
 		if (!pAgent)
@@ -144,29 +140,31 @@ void Flock::Tick(float DeltaTime)
 			continue;
 		}
 
-		// TODO: register the neighbors for this agent (-> fill the memory pool with the neighbors for the currently evaluated agent)
 		RegisterNeighbors(pAgent);
-		// TODO: update the agent (-> the steering behaviors use the neighbors in the memory pool)
 		pAgent->Tick(DeltaTime);
 
-		// TODO: trim the agent to the world
-		// this is already done automatically by NotifyActorEndOverlap
 	}
 }
 
 void Flock::RenderDebug()
 {
-	// TODO: Render all the agents in the flock
 	for (auto pAgent : Agents)
 	{
 		if (!pAgent)
 		{
 			return;
 		}
+		
 		pAgent->SetDebugRenderingEnabled(DebugRenderSteering);
 		if (DebugRenderNeighborhood)
 		{
 			RenderNeighborhood();
+		}
+		
+		if (DebugRenderEvadeRadius)
+		{
+			DrawDebugCircle(pWorld, FVector(pAgentToEvade->GetPosition(), 0), pEvadeNearbyBehavior->EvadeRadius,   ConstantHelpers::DebugDefaultCircleSegments, 
+				FColor::Cyan,   false, 0.f, 0, 5.f, FVector(1,0,0), FVector(0,1,0), false);
 		}
 
 		// TODO: Add Debug when spacial partitioning is done
@@ -215,6 +213,14 @@ void Flock::ImGuiRender(ImVec2 const& WindowPos, ImVec2 const& WindowSize)
 		ImGui::Text("Flocking");
 		ImGui::Spacing();
 
+		if (BaseLevelScriptActor)
+		{
+			ImGui::Checkbox("Visualize Mouse Target", &BaseLevelScriptActor->VisualizeMouseTarget);
+		}
+		
+		ImGui::Checkbox("Debug Render Steering", &DebugRenderSteering);
+		ImGui::Checkbox("Debug Show Evade Radius", &DebugRenderEvadeRadius);
+		
 		if (ImGui::Checkbox("Debug Behavior", &CanDebugBehavior))
 		{
 			pAgentToEvade->SetDebugBehaviorEnabled(CanDebugBehavior);
@@ -230,21 +236,17 @@ void Flock::ImGuiRender(ImVec2 const& WindowPos, ImVec2 const& WindowSize)
 			}
 		}
 
-		// TODO: implement ImGUI checkboxes for debug rendering here
-		if (BaseLevelScriptActor)
-		{
-			ImGui::Checkbox("Visualize Mouse Target", &BaseLevelScriptActor->VisualizeMouseTarget);
-		}
+
 		if (pTrimWorld)
 		{
 			ImGui::Checkbox("Trim World", &pTrimWorld->bShouldTrimWorld);
 		}
 
+		
 
 		ImGui::Text("(Blended) Behavior Weights");
 		ImGui::Spacing();
 
-		// TODO: implement ImGUI sliders for steering behavior weights here
 		ImGuiHelpers::ImGuiSliderFloatWithSetter(
 			"Cohesion",
 			pBlendedSteering->GetWeightedBehaviorsRef()[0].Weight, 0.0f, 1.0f,
@@ -311,6 +313,11 @@ void Flock::RenderNeighborhood()
 
 	for (const auto Agent : Agents)
 	{
+		if (!Agent)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Agent is somehow invalid"));
+			continue;
+		}
 		Agent->SetBodyMaterial(Agent->GetNormalBodyMaterial());
 	}
 
@@ -333,7 +340,6 @@ void Flock::RegisterNeighbors(ASteeringAgent* const pAgent)
 {
 	NrOfNeighbors = 0;
 
-	// TODO: Implement
 	for (const auto OtherAgent : Agents)
 	{
 		if (pAgent == OtherAgent)

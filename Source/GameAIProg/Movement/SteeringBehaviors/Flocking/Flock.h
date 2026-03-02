@@ -93,6 +93,7 @@ private:
 	// UI and rendering
 	bool CanDebugBehavior{false};
 	
+	bool DebugRenderEvadeRadius{false};
 	bool DebugRenderSteering{false};
 	bool DebugRenderNeighborhood{true};
 	bool DebugRenderPartitions{true};
