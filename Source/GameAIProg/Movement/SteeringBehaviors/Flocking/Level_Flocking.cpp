@@ -16,8 +16,15 @@ void ALevel_Flocking::BeginPlay()
 {
 	Super::BeginPlay();
 
-	TrimWorld->SetTrimWorldSize(3000.f);
+	TrimWorld->SetTrimWorldSize(1700.f);
 	TrimWorld->bShouldTrimWorld = true;
+	
+	pAgentToEvade = GetWorld()->SpawnActor<ASteeringAgent>(SteeringAgentClass, FVector(0, 0, 90), FRotator::ZeroRotator);
+	if (!pAgentToEvade)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AgentToEvade is invalid"));
+	}
+	
 
 	pFlock = TUniquePtr<Flock>(
 		new Flock(
@@ -38,7 +45,11 @@ void ALevel_Flocking::Tick(float DeltaTime)
 	pFlock->ImGuiRender(WindowPos, WindowSize);
 	pFlock->Tick(DeltaTime);
 	pFlock->RenderDebug();
+	
 	if (bUseMouseTarget)
+	{
+		UE_LOGFMT(LogTemp, Verbose, "MouseTarget Location: {Location}", MouseTarget.Position.ToString());
 		pFlock->SetTarget_Seek(MouseTarget);
+	}
 }
 
