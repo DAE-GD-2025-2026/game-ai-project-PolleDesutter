@@ -34,6 +34,8 @@ public:
 private:
 	std::vector<WeightedBehavior> WeightedBehaviors = {};
 	const FColor CurrentBehaviorColor{ FColor::Cyan };	
+	
+	const FColor TargetColor{ FColor::Emerald };	
 
 	// using ISteeringBehavior::SetTarget; // made private because targets need to be set on the individual behaviors, not the combined behavior
 };

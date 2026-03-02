@@ -1,3 +1,5 @@
+UE_DISABLE_OPTIMIZATION
+
 #include "CombinedSteeringBehaviors.h"
 #include <algorithm>
 
@@ -28,12 +30,13 @@ SteeringOutput BlendedSteering::CalculateSteering(float DeltaT, ASteeringAgent& 
 			continue;
 		}
 	
-		if (Behavior.Weight == 0.f)
+		if (Behavior.Weight <= 0.f)
 		{
 			continue;
 		}
 		
 		SteeringOutput Output = Behavior.pBehavior->CalculateSteering(DeltaT, Agent);
+		Output *= Behavior.Weight;
 		
 		if (!Output.IsValid)
 		{
@@ -43,11 +46,7 @@ SteeringOutput BlendedSteering::CalculateSteering(float DeltaT, ASteeringAgent& 
 		++NrValidBehaviors;
 		TotalWeight += Behavior.Weight;
 			
-		Output *= Behavior.Weight;
-			
-		BlendedSteering.LinearVelocity += Output.LinearVelocity;
-		BlendedSteering.AngularVelocity += Output.AngularVelocity;
-		
+		BlendedSteering = BlendedSteering + Output;
 	}
 	
 	if (TotalWeight <= 0.f)
@@ -71,7 +70,8 @@ SteeringOutput BlendedSteering::CalculateSteering(float DeltaT, ASteeringAgent& 
 		SteeringHelpers::DrawDebugDirection(Agent);
 		
 		// Draw Target
-		DrawDebugPoint(World, FVector(Target.Position, 0), ConstantHelpers::DebugDefaultPointSize, ConstantHelpers::DebugTargetColor);
+		DrawDebugPoint(World, FVector(Target.Position, 0), 
+			ConstantHelpers::DebugDefaultPointSize, TargetColor);
 		
 		
 		SteeringHelpers::DrawDebugLineFromDirection(World, FVector(Agent.GetPosition(), 0.f),
