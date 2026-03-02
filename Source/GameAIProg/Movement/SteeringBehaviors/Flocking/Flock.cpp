@@ -65,9 +65,11 @@ Flock::Flock(UWorld* pWorld, TSubclassOf<ASteeringAgent> AgentClass, int FlockSi
 
 	const std::vector<BlendedSteering::WeightedBehavior> FlockWeightedBehaviors
 	{
-		{pCohesionBehavior.get(), 0.5f},
-		{pSeparationBehavior.get(), 0.5f},
-		{pVelMatchBehavior.get(), 0.5f},
+		{ pCohesionBehavior.get(),	0.5f	},
+		{ pSeparationBehavior.get(), 0.5f	},
+		{ pVelMatchBehavior.get(),	0.5f	},
+		{ pSeekBehavior.get(),		0.5f	},
+		{ pWanderBehavior.get(),		0.5f	},
 	};
 
 	pBlendedSteering = std::make_unique<BlendedSteering>(FlockWeightedBehaviors);
@@ -272,6 +274,23 @@ void Flock::ImGuiRender(ImVec2 const& WindowPos, ImVec2 const& WindowSize)
 			}, "%.2f");
 
 
+		ImGuiHelpers::ImGuiSliderFloatWithSetter(
+			"Seek",
+			pBlendedSteering->GetWeightedBehaviorsRef()[3].Weight, 0.0f, 1.0f,
+			[this](const float InVal)
+			{
+				pBlendedSteering->GetWeightedBehaviorsRef()[3].Weight = InVal;
+			}, "%.2f");
+
+		ImGuiHelpers::ImGuiSliderFloatWithSetter(
+			"Wander",
+			pBlendedSteering->GetWeightedBehaviorsRef()[4].Weight, 0.0f, 1.0f,
+			[this](const float InVal)
+			{
+				pBlendedSteering->GetWeightedBehaviorsRef()[4].Weight = InVal;
+			}, "%.2f");
+
+
 		ImGui::Text("(Priority) Behaviors");
 		ImGui::Spacing();
 
@@ -336,7 +355,7 @@ void Flock::RenderNeighborhood()
 }
 
 #ifndef GAMEAI_USE_SPACE_PARTITIONING
-void Flock::RegisterNeighbors(ASteeringAgent* const pAgent)
+void Flock::RegisterNeighbors(const ASteeringAgent* const pAgent)
 {
 	NrOfNeighbors = 0;
 
@@ -417,8 +436,4 @@ FVector2D Flock::GetAverageNeighborVelocity() const
 void Flock::SetTarget_Seek(FSteeringParams const& Target) const
 {
 	pSeekBehavior->SetTarget(Target);
-}
-
-void Flock::SetHighlightedColor(UMaterialInterface* Material)
-{
 }

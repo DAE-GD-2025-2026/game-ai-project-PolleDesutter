@@ -40,7 +40,7 @@ public:
 	//const TArray<ASteeringAgent*>& GetNeighbors() const { return pPartitionedSpace->GetNeighbors(); }
 	//int GetNrOfNeighbors() const { return pPartitionedSpace->GetNrOfNeighbors(); }
 #else // No space partitioning
-	void RegisterNeighbors(ASteeringAgent* const Agent);
+	void RegisterNeighbors(const ASteeringAgent* const Agent);
 	int GetNrOfNeighbors() const { return NrOfNeighbors; }
 	const TArray<ASteeringAgent*>& GetNeighbors() const { return Neighbors; }
 #endif // USE_SPACE_PARTITIONING
@@ -50,7 +50,6 @@ public:
 
 	void SetTarget_Seek(FSteeringParams const & Target) const;
 	
-	void SetHighlightedColor(UMaterialInterface* Material);
 	
 private:
 	// For debug rendering purposes
@@ -59,7 +58,7 @@ private:
 	
 	ALevel_Base* BaseLevelScriptActor{nullptr};
 	
-	// Blueprint SteerinAgentClass	
+	// Blueprint SteeringAgentClass	
 	TSubclassOf<ASteeringAgent> SteeringAgentClass{};
 	
 	int FlockSize{};
@@ -93,11 +92,12 @@ private:
 	// UI and rendering
 	bool CanDebugBehavior{false};
 	
-	bool DebugRenderEvadeRadius{false};
-	bool DebugRenderSteering{false};
-	bool DebugRenderNeighborhood{true};
-	bool DebugRenderPartitions{true};
+	bool DebugRenderEvadeRadius{ false };
+	bool DebugRenderSteering{ false };
+	bool DebugRenderNeighborhood{ false };
+	bool DebugRenderPartitions{ false };
 
 	void RenderNeighborhood();
+	
 };
 
