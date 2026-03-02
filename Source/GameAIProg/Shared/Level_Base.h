@@ -30,6 +30,11 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	
+	// Mouse target render toggle
+	bool VisualizeMouseTarget{ false };
+	
+	AWorldTrimVolume* GetTrimWorld() const { return TrimWorld; }
+	
 protected:
 	// Common UI Vars
 	float const MenuWidth{235};
@@ -37,8 +42,6 @@ protected:
 	ImVec2 WindowSize{};
 	ImVec2 WindowPos{};
 
-	// Mouse target render toggle
-	bool VisualizeMouseTarget{ false };
 	const FColor MouseTargetColor{ FColor::White };
 	const float MouseTargetSize{ ConstantHelpers::DebugDefaultPointSize + 5.f };
 

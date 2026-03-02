@@ -37,8 +37,11 @@ void ALevel_Base::Tick(float DeltaTime)
 
 	//Render Target
 	if(VisualizeMouseTarget)
+	{
 		DrawDebugPoint(GetWorld(), FVector(MouseTarget.Position, 0), 
 			MouseTargetSize,
 			MouseTargetColor);	
+	}
+	
 }
 
