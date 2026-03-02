@@ -21,23 +21,25 @@ Flock::Flock(UWorld* pWorld, TSubclassOf<ASteeringAgent> AgentClass, int FlockSi
 #endif	
 
 	pSeparationBehavior = std::make_unique<Separation>(this);
-	pCohesionBehavior = std::make_unique<Cohesion>(this);
-	pVelMatchBehavior = std::make_unique<VelocityMatch>(this);
+	pCohesionBehavior	= std::make_unique<Cohesion>(this);
+	pVelMatchBehavior	= std::make_unique<VelocityMatch>(this);
 
-	pSeekBehavior = std::make_unique<Seek>();
-	pWanderBehavior = std::make_unique<Wander>();
-	pEvadeNearbyBehavior = std::make_unique<EvadeNearby>();
+	pSeekBehavior			= std::make_unique<Seek>();
+	pWanderBehavior			= std::make_unique<Wander>();
+	pEvadeNearbyBehavior	= std::make_unique<EvadeNearby>();
 
 	if (!pWorld)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("BaseLevelScriptActor is not valid"))
+		UE_LOG(LogTemp, Error, TEXT("BaseLevelScriptActor is not valid"))
 		UnrealHelpers::QuitGameOrPie(pWorld->GetWorld());
+		return;
 	}
 
 	if (!pAgentToEvade)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("AgentToEvade is not valid"))
+		UE_LOG(LogTemp, Error, TEXT("AgentToEvade is not valid"))
 		UnrealHelpers::QuitGameOrPie(pWorld->GetWorld());
+		return;
 	}
 
 	pAgentToEvade->SetSteeringBehavior(pSeekBehavior.get());
@@ -59,13 +61,15 @@ Flock::Flock(UWorld* pWorld, TSubclassOf<ASteeringAgent> AgentClass, int FlockSi
 
 	if (!BaseLevelScriptActor)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("BaseLevelScriptActor is not valid"))
+		UE_LOG(LogTemp, Error, TEXT("BaseLevelScriptActor is not valid"))
 		UnrealHelpers::QuitGameOrPie(pWorld->GetWorld());
+		return;
 	}
 	if (!pTrimWorld)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("TrimWorld is not valid"))
+		UE_LOG(LogTemp, Error, TEXT("TrimWorld is not valid"))
 		UnrealHelpers::QuitGameOrPie(pWorld->GetWorld());
+		return;
 	}
 
 

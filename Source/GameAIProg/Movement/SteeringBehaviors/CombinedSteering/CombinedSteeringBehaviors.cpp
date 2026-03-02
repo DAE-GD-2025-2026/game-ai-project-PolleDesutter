@@ -61,7 +61,8 @@ SteeringOutput BlendedSteering::CalculateSteering(float DeltaT, ASteeringAgent& 
 		const UWorld* World = Agent.GetWorld();
 		if (!World)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("World is invalid"));
+			UE_LOG(LogTemp, Error, TEXT("World is invalid"));
+			UnrealHelpers::QuitGameOrPie(Agent.GetWorld());
 			return BlendedSteering;
 		}
 				

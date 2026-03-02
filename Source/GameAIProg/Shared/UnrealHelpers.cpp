@@ -22,13 +22,14 @@ bool UnrealHelpers::GetMouseWorldPosition(const UObject* WorldContextObject, con
 	if (!WorldContextObject)
 	{
 		UE_LOG(LogTemp, Error, TEXT("WorldContextObject is nullptr"));
-		UnrealHelpers::QuitGameOrPie(WorldContextObject->GetWorld());
+		return false;
 	}
 	
 	if (!PlayerController)
 	{
 		UE_LOG(LogTemp, Error, TEXT("PlayerController is nullptr"));
 		UnrealHelpers::QuitGameOrPie(WorldContextObject->GetWorld());
+		return false;
 	}
 	
 	
@@ -66,15 +67,15 @@ void UnrealHelpers::SpawnAndAttachTextToActor(const UObject* WorldContextObject,
 	
 	if (!Actor)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Actor is nullptr"));
+		UE_LOG(LogTemp, Error, TEXT("Actor is nullptr"));
 		UnrealHelpers::QuitGameOrPie(WorldContextObject->GetWorld());
 		return;
 	}
-	
-	auto TextRenderComp = NewObject<UTextRenderComponent>(Actor);	
+
+	const auto TextRenderComp = NewObject<UTextRenderComponent>(Actor);	
 	if (!TextRenderComp)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("TextRenderComp is nullptr"));
+		UE_LOG(LogTemp, Error, TEXT("TextRenderComp is nullptr"));
 		UnrealHelpers::QuitGameOrPie(WorldContextObject->GetWorld());
 		return;
 	}

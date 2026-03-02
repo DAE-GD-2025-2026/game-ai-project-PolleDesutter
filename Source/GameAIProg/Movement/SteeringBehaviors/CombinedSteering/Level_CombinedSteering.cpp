@@ -77,7 +77,7 @@ void ALevel_CombinedSteering::HandleLeftMouseInput(const APlayerController* Play
 {
 	if (!PlayerController)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("PlayerController not valid"));
+		UE_LOG(LogTemp, Error, TEXT("PlayerController not valid"));
 		UnrealHelpers::QuitGameOrPie(GetWorld());
 		return;
 	}
@@ -104,7 +104,7 @@ void ALevel_CombinedSteering::HandleLeftMouseInput(const APlayerController* Play
 		const auto WorldVolume = UnrealHelpers::GetFirstActorOfClass<AWorldTrimVolume>(GetWorld());
 		if (!WorldVolume)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Didn't find WorldTrimVolume"));
+			UE_LOG(LogTemp, Error, TEXT("Didn't find WorldTrimVolume"));
 			UnrealHelpers::QuitGameOrPie(GetWorld());
 			return;	
 		}

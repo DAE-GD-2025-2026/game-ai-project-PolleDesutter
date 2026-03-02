@@ -64,7 +64,7 @@ void CellSpace::AddAgent(ASteeringAgent& Agent)
 	
 	if (CellIndex < 0 || CellIndex >= Cells.size())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("AddAgent: CellIndex is invalid"));
+		UE_LOG(LogTemp, Error, TEXT("AddAgent: CellIndex is invalid"));
 		UnrealHelpers::QuitGameOrPie(Agent.GetWorld());
 		return;
 	}
@@ -133,7 +133,7 @@ void CellSpace::RegisterNeighbors(ASteeringAgent& Agent, float QueryRadius)
 			
 			if (NrOfNeighbors >= Neighbors.Num())
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Neighbor Array is too Small"));
+				UE_LOG(LogTemp, Error, TEXT("Neighbor Array is too Small"));
 				UnrealHelpers::QuitGameOrPie(pWorld->GetWorld());
 				return;
 			}
@@ -169,14 +169,14 @@ int CellSpace::PositionToIndex(FVector2D const& Pos) const
 	
 	if (ColumnIdx < 0 || ColumnIdx >= NrOfCols)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("PositionToIndex: ColumnIdx out of range"));
+		UE_LOG(LogTemp, Error, TEXT("PositionToIndex: ColumnIdx out of range"));
 		UnrealHelpers::QuitGameOrPie(pWorld);
 		return -1;
 	}
 		
 	if (RowIdx < 0 || RowIdx >= NrOfRows)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("PositionToIndex: RowsIdx out of range"));
+		UE_LOG(LogTemp, Error, TEXT("PositionToIndex: RowsIdx out of range"));
 		UnrealHelpers::QuitGameOrPie(pWorld);
 		return -1;
 	}

@@ -9,7 +9,7 @@ void SteeringHelpers::DrawDebugDirection(const ASteeringAgent& Agent)
 	const UWorld* World = Agent.GetWorld();
 	if (!World)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("World is invalid"));
+		UE_LOG(LogTemp, Error, TEXT("World is invalid"));
 		return;
 	}
 	

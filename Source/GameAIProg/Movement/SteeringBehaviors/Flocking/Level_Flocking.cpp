@@ -22,7 +22,7 @@ void ALevel_Flocking::BeginPlay()
 	pAgentToEvade = GetWorld()->SpawnActor<ASteeringAgent>(SteeringAgentClass, FVector(0, 0, 90), FRotator::ZeroRotator);
 	if (!pAgentToEvade)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("AgentToEvade is invalid"));
+		UE_LOG(LogTemp, Error, TEXT("AgentToEvade is invalid"));
 		UnrealHelpers::QuitGameOrPie(GetWorld());
 		return;
 	}

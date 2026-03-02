@@ -23,7 +23,7 @@ void ASteeringAgent::BeginPlay()
 	UActorComponent* ActorComp = GetComponentByClass(UTextRenderComponent::StaticClass());
 	if (!ActorComp)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("TextRenderComponent not found"));
+		UE_LOG(LogTemp, Error, TEXT("TextRenderComponent not found"));
 		UnrealHelpers::QuitGameOrPie(GetWorld());
 		return;
 	}
@@ -31,7 +31,7 @@ void ASteeringAgent::BeginPlay()
 	TextRenderComponent = Cast<UTextRenderComponent>(ActorComp);
 	if (!TextRenderComponent)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("TextRenderComponent couldn't be cast"));
+		UE_LOG(LogTemp, Error, TEXT("TextRenderComponent couldn't be cast"));
 		UnrealHelpers::QuitGameOrPie(GetWorld());
 		return;
 	}
@@ -105,7 +105,7 @@ void ASteeringAgent::SetSteeringBehavior(ISteeringBehavior* NewSteeringBehavior)
 {
 	if (!NewSteeringBehavior)
 	{
-		UE_LOG(LogTemp, Log, TEXT("NewSteeringBehavior is nullptr"));
+		UE_LOG(LogTemp, Error, TEXT("NewSteeringBehavior is nullptr"));
 		UnrealHelpers::QuitGameOrPie(GetWorld());
 		return;
 	}
@@ -134,7 +134,7 @@ void ASteeringAgent::SetDebugBehaviorEnabled(bool DebugBehaviorEnabled)
 	
 	if (!TextRenderComponent)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("TextRenderComponent not found"));
+		UE_LOG(LogTemp, Error, TEXT("TextRenderComponent not found"));
 		UnrealHelpers::QuitGameOrPie(GetWorld());
 		return;
 	}
@@ -146,7 +146,7 @@ FText ASteeringAgent::GetDebugBehaviorText() const
 {
 	if (!TextRenderComponent)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("TextRenderComponent not found"));
+		UE_LOG(LogTemp, Error, TEXT("TextRenderComponent not found"));
 		UnrealHelpers::QuitGameOrPie(GetWorld());
 		return FText::GetEmpty();
 	}
@@ -158,7 +158,7 @@ void ASteeringAgent::SetDebugBehaviorText(const FString& DebugBehaviorText) cons
 {
 	if (!TextRenderComponent)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("TextRenderComponent not found"));
+		UE_LOG(LogTemp, Error, TEXT("TextRenderComponent not found"));
 		UnrealHelpers::QuitGameOrPie(GetWorld());
 		return;	
 	}
@@ -170,7 +170,7 @@ void ASteeringAgent::SetDebugBehaviorTextColor(const FColor& DebugBehaviorTextCo
 {
 	if (!TextRenderComponent)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("TextRenderComponent not found"));
+		UE_LOG(LogTemp, Error, TEXT("TextRenderComponent not found"));
 		UnrealHelpers::QuitGameOrPie(GetWorld());
 		return;	
 	}

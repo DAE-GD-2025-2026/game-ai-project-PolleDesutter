@@ -20,7 +20,7 @@ SteeringOutput Seek::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 		const UWorld* World = Agent.GetWorld();
 		if (!World)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("World is invalid"));
+			UE_LOG(LogTemp, Error, TEXT("World is invalid"));
 			return Steering;
 		}
 				
@@ -58,7 +58,7 @@ SteeringOutput Flee::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 		const UWorld* World = Agent.GetWorld();
 		if (!World)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("World is invalid"));
+			UE_LOG(LogTemp, Error, TEXT("World is invalid"));
 			return Steering;
 		}
 		
@@ -96,7 +96,7 @@ SteeringOutput Wander::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 		const UWorld* World = Agent.GetWorld();
 		if (!World)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("World is invalid"));
+			UE_LOG(LogTemp, Error, TEXT("World is invalid"));
 			return Steering;
 		}
 		
@@ -148,7 +148,7 @@ SteeringOutput Arrive::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 		const UWorld* World = Agent.GetWorld();
 		if (!World)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("World is invalid"));
+			UE_LOG(LogTemp, Error, TEXT("World is invalid"));
 			return Steering;
 		}	
 		
@@ -191,7 +191,7 @@ SteeringOutput Pursuit::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 		const UWorld* World = Agent.GetWorld();
 		if (!World)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("World is invalid"));
+			UE_LOG(LogTemp, Error, TEXT("World is invalid"));
 			return Steering;
 		}	
 		
@@ -228,7 +228,7 @@ SteeringOutput Evade::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 		const UWorld* World = Agent.GetWorld();
 		if (!World)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("World is invalid"));
+			UE_LOG(LogTemp, Error, TEXT("World is invalid"));
 			return Steering;
 		}	
 		
@@ -274,7 +274,7 @@ SteeringOutput EvadeNearby::CalculateSteering(float DeltaT, ASteeringAgent& Agen
 		const UWorld* World = Agent.GetWorld();
 		if (!World)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("World is invalid"));
+			UE_LOG(LogTemp, Error, TEXT("World is invalid"));
 			return Steering;
 		}	
 		
@@ -323,7 +323,7 @@ SteeringOutput Face::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 		const UWorld* World = Agent.GetWorld();
 		if (!World)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("World is invalid"));
+			UE_LOG(LogTemp, Error, TEXT("World is invalid"));
 			return Steering;
 		}	
 		
