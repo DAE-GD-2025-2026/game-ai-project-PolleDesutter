@@ -9,17 +9,23 @@
 SteeringOutput Cohesion::CalculateSteering(float deltaT, ASteeringAgent& pAgent)
 {
 	if (!pFlock)
+	{
 		return SteeringOutput{};
+	}
 		
-	Target.Position = pFlock->GetAverageNeighborPos();
+	const FVector2D TargetPosition = pFlock->GetAverageNeighborPos();
 
+	SteeringOutput Steering{};
+	Steering.LinearVelocity = TargetPosition - pAgent.GetPosition();
+	Steering.LinearVelocity = Steering.LinearVelocity.GetSafeNormal();
+	
 	if (pFlock->DebugRenderAveragePosition)
 	{
-		DrawDebugPoint(pAgent.GetWorld(), FVector(Target.Position, 0), 
+		DrawDebugPoint(pAgent.GetWorld(), FVector(TargetPosition, 0), 
 			ConstantHelpers::DebugDefaultPointSize, FColor::Yellow);
 	}
 	
-	return Seek::CalculateSteering(deltaT, pAgent);
+	return Steering;
 }
 
 
@@ -46,8 +52,9 @@ SteeringOutput Separation::CalculateSteering(float deltaT, ASteeringAgent& pAgen
 		Steering.LinearVelocity += AwayFromTarget / (Distance * Distance);
 	}
 	
+	Steering.LinearVelocity = Steering.LinearVelocity.GetSafeNormal();
 	
-	return Seek::CalculateSteering(deltaT, pAgent);
+	return Steering;
 }
 
 
@@ -56,7 +63,9 @@ SteeringOutput Separation::CalculateSteering(float deltaT, ASteeringAgent& pAgen
 SteeringOutput VelocityMatch::CalculateSteering(float deltaT, ASteeringAgent& pAgent)
 {
 	if (!pFlock)
+	{
 		return SteeringOutput{};
+	}
 	
 	SteeringOutput Steering{};
 	Steering.LinearVelocity = pFlock->GetAverageNeighborVelocity();
