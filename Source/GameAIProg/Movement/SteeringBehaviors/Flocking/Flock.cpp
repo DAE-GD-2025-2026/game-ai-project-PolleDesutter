@@ -13,7 +13,9 @@ Flock::Flock(UWorld* pWorld, TSubclassOf<ASteeringAgent> AgentClass, int FlockSi
 	  , pAgentToEvade{pAgentToEvade}
 {
 	Agents.SetNum(FlockSize);
+#ifndef GAMEAI_USE_SPACE_PARTITIONING
 	Neighbors.SetNum(FlockSize - 1);
+#endif	
 
 	pSeparationBehavior = std::make_unique<Separation>(this);
 	pCohesionBehavior = std::make_unique<Cohesion>(this);
@@ -142,7 +144,9 @@ void Flock::Tick(float DeltaTime)
 			continue;
 		}
 
+#ifndef GAMEAI_USE_SPACE_PARTITIONING
 		RegisterNeighbors(pAgent);
+#endif
 		pAgent->Tick(DeltaTime);
 
 	}
@@ -328,7 +332,9 @@ void Flock::RenderNeighborhood()
 		return;
 	}
 
+#ifndef GAMEAI_USE_SPACE_PARTITIONING
 	RegisterNeighbors(FirstAgent);
+#endif
 
 	for (const auto Agent : Agents)
 	{
@@ -391,6 +397,7 @@ FVector2D Flock::GetAverageNeighborPos() const
 
 	for (int i = 0; i < NrOfNeighbors; ++i)
 	{
+#ifndef GAMEAI_USE_SPACE_PARTITIONING
 		const auto pNeighbor = Neighbors[i];
 		if (!pNeighbor)
 		{
@@ -399,6 +406,7 @@ FVector2D Flock::GetAverageNeighborPos() const
 
 		++ValidAgents;
 		AvgPosition += pNeighbor->GetPosition();
+#endif
 	}
 
 	AvgPosition /= ValidAgents;
@@ -418,6 +426,7 @@ FVector2D Flock::GetAverageNeighborVelocity() const
 
 	for (int i = 0; i < NrOfNeighbors; ++i)
 	{
+#ifndef GAMEAI_USE_SPACE_PARTITIONING
 		const auto Neighbor = Neighbors[i];
 		if (!Neighbor)
 		{
@@ -426,6 +435,7 @@ FVector2D Flock::GetAverageNeighborVelocity() const
 
 		++ValidAgents;
 		AvgVelocity += FVector2D(Neighbor->GetVelocity().X, Neighbor->GetVelocity().Y);
+#endif
 	}
 
 	AvgVelocity /= ValidAgents;
