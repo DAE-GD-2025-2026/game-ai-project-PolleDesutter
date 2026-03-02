@@ -1,5 +1,3 @@
-UE_DISABLE_OPTIMIZATION
-
 #include "CombinedSteeringBehaviors.h"
 #include <algorithm>
 

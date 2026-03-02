@@ -1,5 +1,3 @@
-UE_DISABLE_OPTIMIZATION
-
 #include "FlockingSteeringBehaviors.h"
 #include "Flock.h"
 #include "../SteeringAgent.h"
