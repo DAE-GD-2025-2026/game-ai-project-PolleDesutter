@@ -1,6 +1,6 @@
 #pragma once
 
-
+// Used by macro's
 #include "ConversionHelpers.h"
 #include "UnrealHelpers.h"
 
@@ -15,7 +15,7 @@
 namespace ConstantHelpers
 {
 	constexpr float DebugDefaultLineLength = 150.f;
-	constexpr float	DebugDefaultPointSize = 20.f ;
+	constexpr float	DebugDefaultPointSize = 10.f ;
 	constexpr int	DebugDefaultCircleSegments = 12 ;
 	
 	static FColor DebugDirectionColor = FColor::Magenta;
