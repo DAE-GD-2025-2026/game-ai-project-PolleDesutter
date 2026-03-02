@@ -35,24 +35,10 @@ void ALevel_CombinedSteering::BeginPlay()
 		return;
 	}
 
-
-	BlendedSteering::WeightedBehavior SeekWeightedBehavior
-	{
-		SeekBehavior.get(),
-		0.5f
-	};
-
-	BlendedSteering::WeightedBehavior WanderWeightedBehavior
-	{
-		WanderBehavior.get(),
-		0.5f
-	};
-
-
 	const std::vector<BlendedSteering::WeightedBehavior> DrunkWeightedBehaviors
 	{
-		SeekWeightedBehavior,
-		WanderWeightedBehavior,
+		{ SeekBehavior.get(), 0.5f},
+		{ WanderBehavior.get(), 0.5f},
 	};
 
 	const std::vector<ISteeringBehavior*> EvadePriorityBehaviors
