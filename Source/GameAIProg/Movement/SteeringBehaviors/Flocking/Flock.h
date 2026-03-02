@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 // Toggle this define to enable/disable spatial partitioning
-#define GAMEAI_USE_SPACE_PARTITIONING
+// #define GAMEAI_USE_SPACE_PARTITIONING
 
 #include "FlockingSteeringBehaviors.h"
 #include "Movement/SteeringBehaviors/SteeringAgent.h"
@@ -50,6 +50,7 @@ public:
 
 	void SetTarget_Seek(FSteeringParams const & Target) const;
 	
+	bool DebugRenderAveragePosition{ false };
 	
 private:
 	// For debug rendering purposes

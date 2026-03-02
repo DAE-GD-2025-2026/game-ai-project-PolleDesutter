@@ -13,7 +13,10 @@ Flock::Flock(UWorld* pWorld, TSubclassOf<ASteeringAgent> AgentClass, int FlockSi
 	  , pAgentToEvade{pAgentToEvade}
 {
 	Agents.SetNum(FlockSize);
-#ifndef GAMEAI_USE_SPACE_PARTITIONING
+	
+#ifdef GAMEAI_USE_SPACE_PARTITIONING
+	pPartitionedSpace = std::make_unique<CellSpace>(pWorld, WorldSize, WorldSize, NrOfCellsX, NrOfCellsX, FlockSize);
+#else
 	Neighbors.SetNum(FlockSize - 1);
 #endif	
 
@@ -25,6 +28,7 @@ Flock::Flock(UWorld* pWorld, TSubclassOf<ASteeringAgent> AgentClass, int FlockSi
 	pWanderBehavior = std::make_unique<Wander>();
 	pEvadeNearbyBehavior = std::make_unique<EvadeNearby>();
 
+	UE_LOG(LogTemp, Error, TEXT("AHhhh"));
 
 	if (!pWorld)
 	{
@@ -88,6 +92,7 @@ Flock::Flock(UWorld* pWorld, TSubclassOf<ASteeringAgent> AgentClass, int FlockSi
 	{
 		// // We don't care if bTrimWorld is set or not,
 		// // we still spawn only in world size
+		
 		const FVector RandomSpawnPosition =
 		{
 			FMath::RandRange(-WorldSize, WorldSize),
@@ -147,6 +152,7 @@ void Flock::Tick(float DeltaTime)
 #ifndef GAMEAI_USE_SPACE_PARTITIONING
 		RegisterNeighbors(pAgent);
 #endif
+		
 		pAgent->Tick(DeltaTime);
 
 	}
@@ -226,6 +232,7 @@ void Flock::ImGuiRender(ImVec2 const& WindowPos, ImVec2 const& WindowSize)
 		
 		ImGui::Checkbox("Debug Render Steering", &DebugRenderSteering);
 		ImGui::Checkbox("Debug Show Evade Radius", &DebugRenderEvadeRadius);
+		ImGui::Checkbox("Debug Show Average Flock Position", &DebugRenderAveragePosition);
 		
 		if (ImGui::Checkbox("Debug Behavior", &CanDebugBehavior))
 		{
@@ -326,16 +333,24 @@ void Flock::RenderNeighborhood()
 		return;
 	}
 
-	ASteeringAgent* FirstAgent = Agents[0];
+	const ASteeringAgent* FirstAgent = Agents[0];
 	if (!FirstAgent)
 	{
 		return;
 	}
+	
 
 #ifndef GAMEAI_USE_SPACE_PARTITIONING
 	RegisterNeighbors(FirstAgent);
 #endif
 
+	const auto CurrentNeighbors = GetNeighbors();
+	const int CurrentNrAmountOfNeighbors = GetNrOfNeighbors();
+	if (CurrentNeighbors.IsEmpty())
+	{
+		return;
+	}
+	
 	for (const auto Agent : Agents)
 	{
 		if (!Agent)
@@ -349,9 +364,9 @@ void Flock::RenderNeighborhood()
 	FirstAgent->SetBodyMaterial(FirstAgent->GetBlueBodyMaterial());
 
 	// TODO: fix this broken logic
-	for (int i{}; i < NrOfNeighbors; ++i)
+	for (int i{}; i < CurrentNrAmountOfNeighbors; ++i)
 	{
-		const ASteeringAgent* Neighbor = Agents[i];
+		const ASteeringAgent* Neighbor = CurrentNeighbors[i];
 		if (!Neighbor || Neighbor == FirstAgent)
 		{
 			continue;
@@ -396,10 +411,17 @@ FVector2D Flock::GetAverageNeighborPos() const
 	FVector2D AvgPosition = FVector2D::ZeroVector;
 	int ValidAgents = 0;
 
-#ifndef GAMEAI_USE_SPACE_PARTITIONING
-	for (int i = 0; i < NrOfNeighbors; ++i)
+	const auto CurrentNeighbors = GetNeighbors(); 
+	const int CurrentNrOfNeighbors = GetNrOfNeighbors();
+	
+	if (CurrentNrOfNeighbors == 0)
 	{
-		const auto pNeighbor = Neighbors[i];
+		return FVector2D::ZeroVector;
+	}
+	
+	for (int i = 0; i < CurrentNrOfNeighbors; ++i)
+	{
+		const auto pNeighbor = CurrentNeighbors[i];
 		if (!pNeighbor)
 		{
 			continue;
@@ -410,7 +432,6 @@ FVector2D Flock::GetAverageNeighborPos() const
 	}
 
 	AvgPosition /= ValidAgents;
-#endif
 
 	return AvgPosition;
 }

@@ -82,7 +82,7 @@ public:
 	FText GetDebugBehaviorText() const;
 	void SetDebugBehaviorText(const FString& DebugBehaviorText) const;
 	void SetDebugBehaviorTextColor(const FColor& DebugBehaviorTextColor) const;
-	
+
 	UMaterialInterface* GetNormalBodyMaterial() const { return NormalBodyMaterial; }
 	UMaterialInterface* GetHighlightedBodyMaterial() const { return HighlightedBodyMaterial; }
 	UMaterialInterface* GetRedBodyMaterial() const { return RedBodyMaterial; }
