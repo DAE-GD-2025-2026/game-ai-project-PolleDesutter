@@ -9,9 +9,15 @@
 #include "Movement/SteeringBehaviors/CombinedSteering/CombinedSteeringBehaviors.h"
 #include <memory>
 #include "imgui.h"
+
 #ifdef GAMEAI_USE_SPACE_PARTITIONING
-#include "../SpacePartitioning/SpacePartitioning.h"
+class AWorldTrimVolume;
+	#include "../SpacePartitioning/SpacePartitioning.h"
 #endif
+
+
+class ALevel_Base;
+class AWorldTrimVolume;
 
 class Flock final
 {
@@ -42,14 +48,23 @@ public:
 	FVector2D GetAverageNeighborPos() const;
 	FVector2D GetAverageNeighborVelocity() const;
 
-	void SetTarget_Seek(FSteeringParams const & Target);
-
+	void SetTarget_Seek(FSteeringParams const & Target) const;
+	
+	void SetHighlightedColor(UMaterialInterface* Material);
+	
 private:
 	// For debug rendering purposes
 	UWorld* pWorld{nullptr};
+	AWorldTrimVolume* pTrimWorld{nullptr};
 	
-	int FlockSize{0};
+	ALevel_Base* BaseLevelScriptActor{nullptr};
+	
+	// Blueprint SteerinAgentClass	
+	TSubclassOf<ASteeringAgent> SteeringAgentClass{};
+	
+	int FlockSize{};
 	TArray<ASteeringAgent*> Agents{};
+	
 #ifdef GAMEAI_USE_SPACE_PARTITIONING
 	//std::unique_ptr<CellSpace> pPartitionedSpace{};
 	//int NrOfCellsX{ 10 };
@@ -58,26 +73,30 @@ private:
 	TArray<ASteeringAgent*> Neighbors{};
 #endif // USE_SPACE_PARTITIONING
 	
-	float NeighborhoodRadius{200.f};
-	int NrOfNeighbors{0};
+	float NeighborhoodRadius{ 200.f };
+	int NrOfNeighbors{ 0 };
 
 	ASteeringAgent* pAgentToEvade{nullptr};
 	
 	//Steering Behaviors
-	//std::unique_ptr<Separation> pSeparationBehavior{};
-	//std::unique_ptr<Cohesion> pCohesionBehavior{};
-	//std::unique_ptr<VelocityMatch> pVelMatchBehavior{};
-	//std::unique_ptr<Seek> pSeekBehavior{};
-	//std::unique_ptr<Wander> pWanderBehavior{};
-	//std::unique_ptr<Evade> pEvadeBehavior{};
+	std::unique_ptr<Separation> pSeparationBehavior{};
+	std::unique_ptr<Cohesion> pCohesionBehavior{};
+	std::unique_ptr<VelocityMatch> pVelMatchBehavior{};
+	
+	std::unique_ptr<Seek> pSeekBehavior{};
+	std::unique_ptr<Wander> pWanderBehavior{};
+	std::unique_ptr<EvadeNearby> pEvadeNearbyBehavior{};
 	
 	std::unique_ptr<BlendedSteering> pBlendedSteering{};
 	std::unique_ptr<PrioritySteering> pPrioritySteering{};
 
 	// UI and rendering
+	bool CanDebugBehavior{false};
+	
 	bool DebugRenderSteering{false};
 	bool DebugRenderNeighborhood{true};
 	bool DebugRenderPartitions{true};
 
 	void RenderNeighborhood();
 };
+
