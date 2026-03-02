@@ -44,9 +44,6 @@ void ALevel_Flocking::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-	pFlock = nullptr;
-	UnrealHelpers::QuitGameOrPie(GetWorld());
-
 	pFlock->ImGuiRender(WindowPos, WindowSize);
 	pFlock->Tick(DeltaTime);
 	pFlock->RenderDebug();

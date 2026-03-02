@@ -357,8 +357,6 @@ void Flock::RenderNeighborhood()
 		if (!Agent)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Agent is somehow invalid"));
-			// TODO REMOVE
-			// UnrealHelpers::QuitGameOrPie(pWorld);
 			continue;
 		}
 		Agent->SetBodyMaterial(Agent->GetNormalBodyMaterial());
