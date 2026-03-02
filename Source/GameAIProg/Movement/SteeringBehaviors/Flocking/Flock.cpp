@@ -348,6 +348,7 @@ void Flock::RenderNeighborhood()
 
 	FirstAgent->SetBodyMaterial(FirstAgent->GetBlueBodyMaterial());
 
+	// TODO: fix this broken logic
 	for (int i{}; i < NrOfNeighbors; ++i)
 	{
 		const ASteeringAgent* Neighbor = Agents[i];
@@ -395,9 +396,9 @@ FVector2D Flock::GetAverageNeighborPos() const
 	FVector2D AvgPosition = FVector2D::ZeroVector;
 	int ValidAgents = 0;
 
+#ifndef GAMEAI_USE_SPACE_PARTITIONING
 	for (int i = 0; i < NrOfNeighbors; ++i)
 	{
-#ifndef GAMEAI_USE_SPACE_PARTITIONING
 		const auto pNeighbor = Neighbors[i];
 		if (!pNeighbor)
 		{
@@ -406,10 +407,10 @@ FVector2D Flock::GetAverageNeighborPos() const
 
 		++ValidAgents;
 		AvgPosition += pNeighbor->GetPosition();
-#endif
 	}
 
 	AvgPosition /= ValidAgents;
+#endif
 
 	return AvgPosition;
 }
@@ -424,9 +425,9 @@ FVector2D Flock::GetAverageNeighborVelocity() const
 	FVector2D AvgVelocity = FVector2D::ZeroVector;
 	int ValidAgents = 0;
 
+#ifndef GAMEAI_USE_SPACE_PARTITIONING
 	for (int i = 0; i < NrOfNeighbors; ++i)
 	{
-#ifndef GAMEAI_USE_SPACE_PARTITIONING
 		const auto Neighbor = Neighbors[i];
 		if (!Neighbor)
 		{
@@ -435,10 +436,10 @@ FVector2D Flock::GetAverageNeighborVelocity() const
 
 		++ValidAgents;
 		AvgVelocity += FVector2D(Neighbor->GetVelocity().X, Neighbor->GetVelocity().Y);
-#endif
 	}
 
 	AvgVelocity /= ValidAgents;
+#endif
 
 	return AvgVelocity;
 }
