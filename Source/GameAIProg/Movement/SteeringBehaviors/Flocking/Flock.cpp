@@ -43,6 +43,8 @@ Flock::Flock(UWorld* pWorld, TSubclassOf<ASteeringAgent> AgentClass, int FlockSi
 	}
 
 	pAgentToEvade->SetSteeringBehavior(pWanderBehavior.get());
+	pAgentToEvade->SetBodyMaterial(pAgentToEvade->GetRedBodyMaterial());
+	pAgentToEvade->SetDebugRenderingEnabled(DebugRenderSteering);	
 
 	const auto Level = pWorld->GetLevel(0);
 	if (Level)
@@ -114,9 +116,9 @@ Flock::Flock(UWorld* pWorld, TSubclassOf<ASteeringAgent> AgentClass, int FlockSi
 			continue;
 		}
 
-		Agent->SetBodyMaterial(Agent->GetHighlightedMaterial());
-
+		Agent->SetBodyMaterial(Agent->GetNormalBodyMaterial());
 		Agent->SetSteeringBehavior(pPrioritySteering.get());
+		Agent->SetDebugRenderingEnabled(DebugRenderSteering);	
 
 		UE_LOGFMT(LogTemp, Verbose, "Agent {Index} Location:\t{Location}", i, RandomSpawnPosition.ToString());
 
@@ -172,7 +174,6 @@ void Flock::RenderDebug()
 			return;
 		}
 		
-		pAgent->SetDebugRenderingEnabled(DebugRenderSteering);
 		if (DebugRenderNeighborhood)
 		{
 			RenderNeighborhood();
@@ -235,7 +236,38 @@ void Flock::ImGuiRender(ImVec2 const& WindowPos, ImVec2 const& WindowSize)
 			ImGui::Checkbox("Visualize Mouse Target", &BaseLevelScriptActor->VisualizeMouseTarget);
 		}
 		
-		ImGui::Checkbox("Debug Render Steering", &DebugRenderSteering);
+		if (ImGui::Checkbox("Debug Neighborhood", &DebugRenderNeighborhood))
+		{
+			if (!DebugRenderNeighborhood)
+			{
+				for (const auto Agent : Agents)
+				{
+					if (!Agent)
+					{
+						continue;
+					}
+					
+					Agent->SetBodyMaterial(Agent->GetNormalBodyMaterial());
+				}
+			}
+			
+		}
+		
+		if (ImGui::Checkbox("Debug Render Steering", &DebugRenderSteering))
+		{
+			pAgentToEvade->SetDebugRenderingEnabled(DebugRenderSteering);
+			
+			for (const auto Agent : Agents)
+			{
+				if (!Agent)
+				{
+					continue;
+				}
+				
+				Agent->SetDebugRenderingEnabled(DebugRenderSteering);
+			}
+			
+		}
 		ImGui::Checkbox("Debug Show Evade Radius", &DebugRenderEvadeRadius);
 		ImGui::Checkbox("Debug Show Average Flock Position", &DebugRenderAveragePosition);
 		
@@ -306,10 +338,19 @@ void Flock::ImGuiRender(ImVec2 const& WindowPos, ImVec2 const& WindowSize)
 				pBlendedSteering->GetWeightedBehaviorsRef()[4].Weight = InVal;
 			}, "%.2f");
 
+		
 
-		ImGui::Text("(Priority) Behaviors");
+		ImGui::Text("Radii");
 		ImGui::Spacing();
-
+	
+		
+		ImGuiHelpers::ImGuiSliderFloatWithSetter(
+			"Neighborhood Radius",
+			NeighborhoodRadius, 0.0f, 1000.0f,
+			[this](const float InVal)
+			{
+				NeighborhoodRadius = InVal;
+			}, "%.2f");
 
 		ImGuiHelpers::ImGuiSliderFloatWithSetter(
 			"Evade Radius",
@@ -360,7 +401,14 @@ void Flock::RenderNeighborhood()
 	{
 		if (!Agent)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Agent is somehow invalid"));
+			int i = 0;
+			for (i = 0; i < Agents.Num(); ++i)
+			{
+				if (Agents[i] == Agent)
+					break;
+			}
+			
+			UE_LOGFMT(LogTemp, Warning, "Agent {Index} is somehow invalid", i);
 			continue;
 		}
 		Agent->SetBodyMaterial(Agent->GetNormalBodyMaterial());
@@ -368,7 +416,6 @@ void Flock::RenderNeighborhood()
 
 	FirstAgent->SetBodyMaterial(FirstAgent->GetBlueBodyMaterial());
 
-	// TODO: fix this broken logic
 	for (int i{}; i < CurrentNrAmountOfNeighbors; ++i)
 	{
 		const ASteeringAgent* Neighbor = CurrentNeighbors[i];
@@ -379,6 +426,11 @@ void Flock::RenderNeighborhood()
 
 		Neighbor->SetBodyMaterial(Neighbor->GetHighlightedBodyMaterial());
 	}
+	
+	DrawDebugCircle(pWorld, FVector(FirstAgent->GetPosition(), 0), NeighborhoodRadius, 
+		ConstantHelpers::DebugDefaultCircleSegments, FColor::Red, 
+		false, 0.f, 0, 5.f, FVector(1,0,0), 
+		FVector(0,1,0), false);
 }
 
 #ifndef GAMEAI_USE_SPACE_PARTITIONING
