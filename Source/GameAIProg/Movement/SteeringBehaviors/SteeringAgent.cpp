@@ -24,14 +24,16 @@ void ASteeringAgent::BeginPlay()
 	if (!ActorComp)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("TextRenderComponent not found"));
-		return;		
+		UnrealHelpers::QuitGameOrPie(GetWorld());
+		return;
 	}
 	
 	TextRenderComponent = Cast<UTextRenderComponent>(ActorComp);
 	if (!TextRenderComponent)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("TextRenderComponent couldn't be cast"));
-		return;		
+		UnrealHelpers::QuitGameOrPie(GetWorld());
+		return;
 	}
 	
 	TextRenderComponent->SetWorldSize(64.f);	
@@ -104,6 +106,7 @@ void ASteeringAgent::SetSteeringBehavior(ISteeringBehavior* NewSteeringBehavior)
 	if (!NewSteeringBehavior)
 	{
 		UE_LOG(LogTemp, Log, TEXT("NewSteeringBehavior is nullptr"));
+		UnrealHelpers::QuitGameOrPie(GetWorld());
 		return;
 	}
 	
@@ -132,6 +135,7 @@ void ASteeringAgent::SetDebugBehaviorEnabled(bool DebugBehaviorEnabled)
 	if (!TextRenderComponent)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("TextRenderComponent not found"));
+		UnrealHelpers::QuitGameOrPie(GetWorld());
 		return;
 	}
 	
@@ -143,7 +147,8 @@ FText ASteeringAgent::GetDebugBehaviorText() const
 	if (!TextRenderComponent)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("TextRenderComponent not found"));
-		return FText();
+		UnrealHelpers::QuitGameOrPie(GetWorld());
+		return FText::GetEmpty();
 	}
 	
 	return TextRenderComponent->Text;
@@ -154,7 +159,8 @@ void ASteeringAgent::SetDebugBehaviorText(const FString& DebugBehaviorText) cons
 	if (!TextRenderComponent)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("TextRenderComponent not found"));
-		return;
+		UnrealHelpers::QuitGameOrPie(GetWorld());
+		return;	
 	}
 	
 	TextRenderComponent->SetText(FText::FromString(DebugBehaviorText));
@@ -165,7 +171,8 @@ void ASteeringAgent::SetDebugBehaviorTextColor(const FColor& DebugBehaviorTextCo
 	if (!TextRenderComponent)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("TextRenderComponent not found"));
-		return;
+		UnrealHelpers::QuitGameOrPie(GetWorld());
+		return;	
 	}
 	
 	TextRenderComponent->SetTextRenderColor(DebugBehaviorTextColor);

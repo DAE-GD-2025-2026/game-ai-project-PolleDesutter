@@ -24,6 +24,7 @@ public class GameAIProg : ModuleRules
 			"UMG",
 			"Slate",
 			"ImGui",
+			"UnrealEd"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });

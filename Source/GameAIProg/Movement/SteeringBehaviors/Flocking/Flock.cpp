@@ -28,18 +28,16 @@ Flock::Flock(UWorld* pWorld, TSubclassOf<ASteeringAgent> AgentClass, int FlockSi
 	pWanderBehavior = std::make_unique<Wander>();
 	pEvadeNearbyBehavior = std::make_unique<EvadeNearby>();
 
-	UE_LOG(LogTemp, Error, TEXT("AHhhh"));
-
 	if (!pWorld)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("BaseLevelScriptActor is not valid"))
-		return;
+		UnrealHelpers::QuitGameOrPie(pWorld->GetWorld());
 	}
 
 	if (!pAgentToEvade)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("AgentToEvade is not valid"))
-		return;
+		UnrealHelpers::QuitGameOrPie(pWorld->GetWorld());
 	}
 
 	pAgentToEvade->SetSteeringBehavior(pSeekBehavior.get());
@@ -62,10 +60,12 @@ Flock::Flock(UWorld* pWorld, TSubclassOf<ASteeringAgent> AgentClass, int FlockSi
 	if (!BaseLevelScriptActor)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("BaseLevelScriptActor is not valid"))
+		UnrealHelpers::QuitGameOrPie(pWorld->GetWorld());
 	}
 	if (!pTrimWorld)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("TrimWorld is not valid"))
+		UnrealHelpers::QuitGameOrPie(pWorld->GetWorld());
 	}
 
 
@@ -156,6 +156,7 @@ void Flock::Tick(float DeltaTime)
 		pAgent->Tick(DeltaTime);
 
 	}
+	
 }
 
 void Flock::RenderDebug()
@@ -356,6 +357,8 @@ void Flock::RenderNeighborhood()
 		if (!Agent)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Agent is somehow invalid"));
+			// TODO REMOVE
+			// UnrealHelpers::QuitGameOrPie(pWorld);
 			continue;
 		}
 		Agent->SetBodyMaterial(Agent->GetNormalBodyMaterial());

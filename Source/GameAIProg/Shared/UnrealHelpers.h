@@ -36,6 +36,9 @@ namespace UnrealHelpers
 	inline FString GetFunctionNameFromFunction(const char* CharString);
 	
 	void SpawnAndAttachTextToActor(const UObject* WorldContextObject, AActor* Actor);
+	
+	
+	void QuitGameOrPie(const UObject* WorldContextObject);
 	 
 }
 

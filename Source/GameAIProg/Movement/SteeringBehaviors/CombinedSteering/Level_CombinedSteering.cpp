@@ -26,12 +26,14 @@ void ALevel_CombinedSteering::BeginPlay()
 	if (!DrunkAgent)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Drunk Agent Couldn't Spawn"));
+		UnrealHelpers::QuitGameOrPie(GetWorld());
 		return;
 	}
 
 	if (!EvadingAgent)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Evading Agent Couldn't Spawn"));
+		UnrealHelpers::QuitGameOrPie(GetWorld());
 		return;
 	}
 
@@ -76,6 +78,7 @@ void ALevel_CombinedSteering::HandleLeftMouseInput(const APlayerController* Play
 	if (!PlayerController)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("PlayerController not valid"));
+		UnrealHelpers::QuitGameOrPie(GetWorld());
 		return;
 	}
 
@@ -102,7 +105,8 @@ void ALevel_CombinedSteering::HandleLeftMouseInput(const APlayerController* Play
 		if (!WorldVolume)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Didn't find WorldTrimVolume"));
-			return;
+			UnrealHelpers::QuitGameOrPie(GetWorld());
+			return;	
 		}
 
 		const bool IsInside = UnrealHelpers::IsPositionInsideVolume(*WorldVolume->GetTrimVolume(), MouseWorldPosition);
@@ -113,6 +117,7 @@ void ALevel_CombinedSteering::HandleLeftMouseInput(const APlayerController* Play
 
 		if (!Agent)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("Couldn't spawn Agent"));
 			return;
 		}
 

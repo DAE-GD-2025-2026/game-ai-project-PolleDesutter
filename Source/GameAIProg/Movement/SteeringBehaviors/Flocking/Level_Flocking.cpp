@@ -23,6 +23,8 @@ void ALevel_Flocking::BeginPlay()
 	if (!pAgentToEvade)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("AgentToEvade is invalid"));
+		UnrealHelpers::QuitGameOrPie(GetWorld());
+		return;
 	}
 	
 
@@ -41,6 +43,9 @@ void ALevel_Flocking::BeginPlay()
 void ALevel_Flocking::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+	pFlock = nullptr;
+	UnrealHelpers::QuitGameOrPie(GetWorld());
 
 	pFlock->ImGuiRender(WindowPos, WindowSize);
 	pFlock->Tick(DeltaTime);
