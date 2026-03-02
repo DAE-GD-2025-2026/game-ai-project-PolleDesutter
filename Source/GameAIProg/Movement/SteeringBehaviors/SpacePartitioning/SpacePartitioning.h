@@ -67,6 +67,6 @@ private:
 	int NrOfNeighbors;
 
 	// Helper functions
-	int PositionToIndex(FVector2D const & Pos) const;
-	bool DoRectsOverlap(FRect const& RectA, FRect const& RectB);
+	int PositionToIndex(FVector2D const& Pos) const;
+	static bool DoRectsOverlap(FRect const& RectA, FRect const& RectB);
 };
