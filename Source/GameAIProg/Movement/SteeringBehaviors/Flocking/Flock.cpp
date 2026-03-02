@@ -42,7 +42,7 @@ Flock::Flock(UWorld* pWorld, TSubclassOf<ASteeringAgent> AgentClass, int FlockSi
 		return;
 	}
 
-	pAgentToEvade->SetSteeringBehavior(pSeekBehavior.get());
+	pAgentToEvade->SetSteeringBehavior(pWanderBehavior.get());
 
 	const auto Level = pWorld->GetLevel(0);
 	if (Level)
