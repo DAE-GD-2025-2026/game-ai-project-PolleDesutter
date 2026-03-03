@@ -1,12 +1,14 @@
 #include "UnrealHelpers.h"
 
 #include "Components/TextRenderComponent.h"
+#include "Debug/ReporterGraph.h"
 
 #if WITH_EDITOR
 	#include "Editor.h"
 	#include "UnrealEdGlobals.h"
 	#include "Editor/UnrealEdEngine.h"
 #endif
+
 
 bool UnrealHelpers::IsPositionInsideVolume(const UBoxComponent& BoxComponent, const FVector& Position)
 {
@@ -89,6 +91,12 @@ void UnrealHelpers::SpawnAndAttachTextToActor(const UObject* WorldContextObject,
 	// Set default text
 	TextRenderComp->SetText(INVTEXT("Default"));
 	
+}
+
+
+FVector2D UnrealHelpers::GetCenter(const FRect& Rect)
+{
+	return (Rect.Min + Rect.Max) * 0.5;
 }
 
 void UnrealHelpers::QuitGameOrPie(const UObject* WorldContextObject)

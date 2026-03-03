@@ -1,6 +1,10 @@
+UE_DISABLE_OPTIMIZATION
+
 #include "SpacePartitioning.h"
 
 #include "GeometryCollection/GeometryCollectionConvexUtility.h"
+
+// NOTE: Y is horizontal and X is Vertical (for some reason)
 
 // --- Cell ---
 // ------------
@@ -12,20 +16,20 @@ Cell::Cell(float Left, float Bottom, float Width, float Height)
 
 std::vector<FVector2D> Cell::GetRectPoints() const
 {
-	const float left = BoundingBox.Min.X;
-	const float bottom = BoundingBox.Min.Y;
-	const float width = BoundingBox.Max.X - BoundingBox.Min.X;
-	const float height = BoundingBox.Max.Y - BoundingBox.Min.Y;
+	const float Left = BoundingBox.Min.X;
+	const float Bottom = BoundingBox.Min.Y;
+	const float Width = BoundingBox.Max.X - BoundingBox.Min.X;
+	const float Height = BoundingBox.Max.Y - BoundingBox.Min.Y;
 
-	std::vector<FVector2D> rectPoints =
+	std::vector<FVector2D> RectPoints =
 	{
-		{ left , bottom  },
-		{ left , bottom + height  },
-		{ left + width , bottom + height },
-		{ left + width , bottom  },
+		{ Left , Bottom  },
+		{ Left , Bottom + Height  },
+		{ Left + Width , Bottom + Height },
+		{ Left + Width , Bottom  },
 	};
 
-	return rectPoints;
+	return RectPoints;
 }
 
 // --- Partitioned Space ---
@@ -41,25 +45,33 @@ CellSpace::CellSpace(UWorld* pWorld, float Width, float Height, int Rows, int Co
 	Neighbors.SetNum(MaxEntities);
 	
 	// Calculate bounds of a cell
-	CellWidth = Width / Cols;
-	CellHeight = Height / Rows;
+	CellWidth = SpaceWidth / Cols;
+	CellHeight = SpaceHeight / Rows;
 
-	// TODO: create the cells
-	for (int ColumnIdx = 0; ColumnIdx < NrOfCols; ++ColumnIdx)
+	for (int RowIdx  = 0; RowIdx < NrOfRows; ++RowIdx)
 	{
-		for (int RowIdx  = 0; RowIdx < NrOfRows; ++RowIdx)
+		for (int ColumnIdx = 0; ColumnIdx < NrOfCols; ++ColumnIdx)
 		{
-			Cell CurrentCell{ ColumnIdx * CellWidth, RowIdx * CellHeight, CellWidth, CellHeight };
+			Cell CurrentCell
+			{ 
+				-SpaceHeight / 2.f + RowIdx * CellHeight, 
+				-SpaceWidth / 2.f  + ColumnIdx * CellWidth, 
+				CellHeight, 
+				CellWidth, 
+			};
 			Cells.emplace_back(CurrentCell);
 		}
 	}
 	
-	
+	// for (const auto& Cell : Cells)
+	// {
+	// 	DrawDebugPoint(pWorld, FVector(UnrealHelpers::GetCenter(Cell.BoundingBox), 0), 
+	// 		ConstantHelpers::DebugDefaultPointSize, FColor::Green, true);
+	// }
 }
 
 void CellSpace::AddAgent(ASteeringAgent& Agent)
 {
-	// TODO: Add the agent to the correct cell
 	const int CellIndex = PositionToIndex(Agent.GetPosition());
 	
 	if (CellIndex < 0 || CellIndex >= Cells.size())
@@ -74,8 +86,6 @@ void CellSpace::AddAgent(ASteeringAgent& Agent)
 
 void CellSpace::UpdateAgentCell(ASteeringAgent& Agent, const FVector2D& OldPos)
 {
-	//TODO Check if the agent needs to be moved to another cell.
-	//TODO Use the calculated index for oldPos and currentPos for this
 	const int OldCellIndex = PositionToIndex(OldPos);
 	const int NewCellIndex = PositionToIndex(Agent.GetPosition());
 	
@@ -84,14 +94,34 @@ void CellSpace::UpdateAgentCell(ASteeringAgent& Agent, const FVector2D& OldPos)
 		return;	
 	}
 	
-	Cells[OldCellIndex].Agents.remove(&Agent);
-	Cells[NewCellIndex].Agents.push_back(&Agent);
+	// Due to the late 'teleporting', the OldCellIndex can be -1.
+	// e.g. Agent is exits the TrimWorld, before the teleporting, 
+	// the NewIndex will be -1, and the Agent's entry at OldCellIndex 
+	// will need to be removed. Same for when OldCellIndex is -1, 
+	// and then the teleport happens, meaning NewCellIndex will be valid.
+	
+	if (OldCellIndex == -1)
+	{
+		UE_LOGFMT(LogTemp, Verbose, "OldCellIndex is invalid (-1)");
+	}
+	if (NewCellIndex == -1)
+	{
+		UE_LOGFMT(LogTemp, Verbose, "NewCellIndex is invalid (-1)");
+	}
+	
+	if (OldCellIndex != -1)
+	{
+		Cells[OldCellIndex].Agents.remove(&Agent);
+	}
+	if (NewCellIndex != -1)
+	{
+		Cells[NewCellIndex].Agents.push_back(&Agent);
+	}
+	
 }
 
-void CellSpace::RegisterNeighbors(ASteeringAgent& Agent, float QueryRadius)
+void CellSpace::RegisterNeighbors(const ASteeringAgent& Agent, float QueryRadius)
 {
-	// TODO Register the neighbors for the provided agent
-	// TODO Only check the cells that are within the radius of the neighborhood
 	NrOfNeighbors = 0;	
 	
 	const FVector2D AgentPosition = Agent.GetPosition();
@@ -139,7 +169,7 @@ void CellSpace::RegisterNeighbors(ASteeringAgent& Agent, float QueryRadius)
 			}
 			
 			Neighbors[NrOfNeighbors] = Neighbor;
-			++NrOfNeighbors;		
+			++NrOfNeighbors;
 		
 		}
 	}
@@ -157,27 +187,36 @@ void CellSpace::EmptyCells()
 
 void CellSpace::RenderCells() const
 {
-	// TODO Render the cells with the number of agents inside of it
+	const FVector Extent(CellHeight / 2.f, CellWidth / 2.f, 0.0f);
+	
+	for (const auto& Cell : Cells)
+	{
+		const FVector Center = FVector(UnrealHelpers::GetCenter(Cell.BoundingBox), 0);
+		DrawDebugBox(pWorld, Center, Extent, FColor::Magenta);
+		
+		const int NrOfAgents = Cell.Agents.size();
+		const FVector CenterOffsetText = FVector(Extent.Y / 2.f, -Extent.X / 2.f, 0.f);
+		DrawDebugString(pWorld, Center + CenterOffsetText, FString::FromInt(NrOfAgents), 0, 
+			FColor::Red, 0.01f, false, 1.2f);
+	}
+	
 }
 
 int CellSpace::PositionToIndex(FVector2D const& Pos) const
 {
-	// TODO Calculate the index of the cell based on the position
-	const FVector2D Position = Pos - CellOrigin;
-	const int ColumnIdx = static_cast<int>(Position.X / CellWidth);	
-	const int RowIdx	= static_cast<int>(Position.Y / CellHeight);	
+	const FVector2D Position = Pos + FVector2D(SpaceWidth / 2.f, SpaceHeight / 2.f);
+	const int ColumnIdx = static_cast<int>(Position.Y / CellWidth);	
+	const int RowIdx	= static_cast<int>(Position.X / CellHeight);	
 	
 	if (ColumnIdx < 0 || ColumnIdx >= NrOfCols)
 	{
-		UE_LOG(LogTemp, Error, TEXT("PositionToIndex: ColumnIdx out of range"));
-		UnrealHelpers::QuitGameOrPie(pWorld);
+		UE_LOGFMT(LogTemp, Error, "PositionToIndex: ColumnIdx ({ColumnIndex}) out of range", ColumnIdx);
 		return -1;
 	}
 		
 	if (RowIdx < 0 || RowIdx >= NrOfRows)
 	{
-		UE_LOG(LogTemp, Error, TEXT("PositionToIndex: RowsIdx out of range"));
-		UnrealHelpers::QuitGameOrPie(pWorld);
+		UE_LOGFMT(LogTemp, Error, "PositionToIndex: RowIdx ({RowIndex}) out of range", RowIdx);
 		return -1;
 	}
 	
@@ -193,3 +232,4 @@ bool CellSpace::DoRectsOverlap(FRect const& RectA, FRect const& RectB)
 	// If they are not separated, they must overlap
 	return true;
 }
+

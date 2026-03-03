@@ -9,6 +9,8 @@
 #include "Containers/StringConv.h"
 
 
+struct FRect;
+
 namespace UnrealHelpers
 {
 	template <typename T>	
@@ -36,6 +38,9 @@ namespace UnrealHelpers
 	inline FString GetFunctionNameFromFunction(const char* CharString);
 	
 	void SpawnAndAttachTextToActor(const UObject* WorldContextObject, AActor* Actor);
+	
+	
+	FVector2D GetCenter(const FRect& Rect);
 	
 	
 	void QuitGameOrPie(const UObject* WorldContextObject);

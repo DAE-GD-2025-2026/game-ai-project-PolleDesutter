@@ -1,6 +1,7 @@
 #include "Flock.h"
 
 #include "Level_Flocking.h"
+#include "GeometryCollection/GeometryCollectionComponent.h"
 #include "Shared/WorldTrimVolume.h"
 #include "Shared/ImGuiHelpers.h"
 
@@ -15,7 +16,8 @@ Flock::Flock(UWorld* pWorld, TSubclassOf<ASteeringAgent> AgentClass, int FlockSi
 	Agents.SetNum(FlockSize);
 	
 #ifdef GAMEAI_USE_SPACE_PARTITIONING
-	pPartitionedSpace = std::make_unique<CellSpace>(pWorld, WorldSize, WorldSize, NrOfCellsX, NrOfCellsX, FlockSize);
+	pPartitionedSpace = std::make_unique<CellSpace>(pWorld, 2 * WorldSize, 2 * WorldSize, NrOfCellsX, NrOfCellsX, FlockSize);
+	OldPositions.SetNum(FlockSize);
 #else
 	Neighbors.SetNum(FlockSize - 1);
 #endif	
@@ -120,9 +122,17 @@ Flock::Flock(UWorld* pWorld, TSubclassOf<ASteeringAgent> AgentClass, int FlockSi
 		Agent->SetSteeringBehavior(pPrioritySteering.get());
 		Agent->SetDebugRenderingEnabled(DebugRenderSteering);	
 
+		
+		#ifdef GAMEAI_USE_SPACE_PARTITIONING
+			pPartitionedSpace->AddAgent(*Agent);
+			OldPositions[i] = Agent->GetPosition();
+		#endif
+		
 		UE_LOGFMT(LogTemp, Verbose, "Agent {Index} Location:\t{Location}", i, RandomSpawnPosition.ToString());
 
 		Agents[i] = Agent;
+		
+		
 	}
 }
 
@@ -148,14 +158,22 @@ void Flock::Tick(float DeltaTime)
 		pEvadeNearbyBehavior->SetTarget(TargetData);
 	}
 
-	for (auto pAgent : Agents)
+	for (int i = 0; i < Agents.Num(); ++i)
 	{
+		const auto pAgent = Agents[i];
 		if (!pAgent)
 		{
 			continue;
 		}
 
-#ifndef GAMEAI_USE_SPACE_PARTITIONING
+#ifdef GAMEAI_USE_SPACE_PARTITIONING
+		
+		pPartitionedSpace->UpdateAgentCell(*pAgent, OldPositions[i]);
+		OldPositions[i] = pAgent->GetPosition();
+			
+		
+		
+#else
 		RegisterNeighbors(pAgent);
 #endif
 		
@@ -183,11 +201,15 @@ void Flock::RenderDebug()
 		{
 			DrawDebugCircle(pWorld, FVector(pAgentToEvade->GetPosition(), 0), pEvadeNearbyBehavior->EvadeRadius,   ConstantHelpers::DebugDefaultCircleSegments, 
 				FColor::Cyan,   false, 0.f, 0, 5.f, FVector(1,0,0), FVector(0,1,0), false);
+			
 		}
 
 		// TODO: Add Debug when spacial partitioning is done
 		if (DebugRenderPartitions)
 		{
+#ifdef GAMEAI_USE_SPACE_PARTITIONING
+			pPartitionedSpace->RenderCells();
+#endif
 		}
 	}
 }
@@ -236,21 +258,23 @@ void Flock::ImGuiRender(ImVec2 const& WindowPos, ImVec2 const& WindowSize)
 			ImGui::Checkbox("Visualize Mouse Target", &BaseLevelScriptActor->VisualizeMouseTarget);
 		}
 		
+		
+#ifdef GAMEAI_USE_SPACE_PARTITIONING
+		ImGui::Checkbox("Debug (Space) Partitions", &DebugRenderPartitions);
+#endif
+		
+		
 		if (ImGui::Checkbox("Debug Neighborhood", &DebugRenderNeighborhood))
 		{
-			if (!DebugRenderNeighborhood)
+			for (const auto Agent : Agents)
 			{
-				for (const auto Agent : Agents)
+				if (!Agent)
 				{
-					if (!Agent)
-					{
-						continue;
-					}
-					
-					Agent->SetBodyMaterial(Agent->GetNormalBodyMaterial());
+					continue;
 				}
+					
+				Agent->SetBodyMaterial(Agent->GetNormalBodyMaterial());
 			}
-			
 		}
 		
 		if (ImGui::Checkbox("Debug Render Steering", &DebugRenderSteering))
@@ -295,6 +319,7 @@ void Flock::ImGuiRender(ImVec2 const& WindowPos, ImVec2 const& WindowSize)
 		
 
 		ImGui::Text("(Blended) Behavior Weights");
+		ImGui::Spacing();
 		ImGui::Spacing();
 
 		ImGuiHelpers::ImGuiSliderFloatWithSetter(
@@ -342,6 +367,8 @@ void Flock::ImGuiRender(ImVec2 const& WindowPos, ImVec2 const& WindowSize)
 
 		ImGui::Text("Radii");
 		ImGui::Spacing();
+		ImGui::Spacing();
+		ImGui::Spacing();
 	
 		
 		ImGuiHelpers::ImGuiSliderFloatWithSetter(
@@ -386,7 +413,9 @@ void Flock::RenderNeighborhood()
 	}
 	
 
-#ifndef GAMEAI_USE_SPACE_PARTITIONING
+#ifdef GAMEAI_USE_SPACE_PARTITIONING
+	pPartitionedSpace->RegisterNeighbors(*FirstAgent, NeighborhoodRadius);
+#else
 	RegisterNeighbors(FirstAgent);
 #endif
 
