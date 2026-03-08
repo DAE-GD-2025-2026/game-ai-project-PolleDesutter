@@ -16,7 +16,8 @@ Flock::Flock(UWorld* pWorld, TSubclassOf<ASteeringAgent> AgentClass, int FlockSi
 	Agents.SetNum(FlockSize);
 	
 #ifdef GAMEAI_USE_SPACE_PARTITIONING
-	pPartitionedSpace = std::make_unique<CellSpace>(pWorld, 2 * WorldSize, 2 * WorldSize, NrOfCellsX, NrOfCellsX, FlockSize);
+	constexpr float PartitionPaddingSpace = 400.f;
+	pPartitionedSpace = std::make_unique<CellSpace>(pWorld, 2 * WorldSize + PartitionPaddingSpace, 2 * WorldSize + PartitionPaddingSpace, NrOfCellsX, NrOfCellsX, FlockSize);
 	OldPositions.Init(FVector2D::ZeroVector, FlockSize);
 #else
 	Neighbors.SetNum(FlockSize - 1);
@@ -201,7 +202,7 @@ void Flock::Tick(float DeltaTime)
 			OldPositions[i] = CurrentPosition;
 		}
 			
-		pPartitionedSpace->RegisterNeighbors(*pAgent, NeighborhoodRadius); 
+		// pPartitionedSpace->RegisterNeighbors(*pAgent, NeighborhoodRadius); 
 		
 #else
 		RegisterNeighbors(pAgent);
