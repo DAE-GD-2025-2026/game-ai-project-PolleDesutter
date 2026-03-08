@@ -38,25 +38,32 @@ void AWorldTrimVolume::NotifyActorEndOverlap(AActor* OtherActor)
 	FVector2D const BottomLeft{Origin.X - BoxExtent.X, Origin.Y - BoxExtent.Y};
 	
 	FVector2D NewPos = FVector2D(OtherActor->GetActorLocation().X, OtherActor->GetActorLocation().Y);
+	
+	const float RandomXOffset = FMath::FRandRange(0.f, 10.f);
+	const float RandomYOffset = FMath::FRandRange(0.f, 10.f);
+	
 	if (bIsWorldLooping)
 	{
 		if (NewPos.X > TopRight.X)
-			NewPos.X = BottomLeft.X;
+			NewPos.X = BottomLeft.X + RandomXOffset;
 		else if (NewPos.X < BottomLeft.X)
-			NewPos.X = TopRight.X;
+			NewPos.X = TopRight.X - RandomXOffset;
 
 		if (NewPos.Y > TopRight.Y)
-			NewPos.Y = BottomLeft.Y;
+			NewPos.Y = BottomLeft.Y + RandomYOffset;
 		else if (NewPos.Y < BottomLeft.Y)
-			NewPos.Y = TopRight.Y;
+			NewPos.Y = TopRight.Y - RandomYOffset;
 	}
 	else
 	{
-		NewPos.X = UKismetMathLibrary::Clamp(NewPos.X, BottomLeft.X, TopRight.Y);
-		NewPos.Y = UKismetMathLibrary::Clamp(NewPos.Y, BottomLeft.Y, TopRight.Y);
+		NewPos.X = UKismetMathLibrary::Clamp(NewPos.X, BottomLeft.X + RandomXOffset, 
+			TopRight.X - RandomXOffset);
+		NewPos.Y = UKismetMathLibrary::Clamp(NewPos.Y, BottomLeft.Y + RandomYOffset, 
+			TopRight.Y - RandomYOffset);
 	}
 
-	OtherActor->SetActorLocation(FVector{NewPos, OtherActor->GetActorLocation().Z});
+	OtherActor->SetActorLocation(FVector{NewPos, OtherActor->GetActorLocation().Z + FMath::FRandRange(0.f, 20.f)}, 
+		false);
 
 }
 
