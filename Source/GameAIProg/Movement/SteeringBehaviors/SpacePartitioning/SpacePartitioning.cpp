@@ -1,5 +1,3 @@
-UE_DISABLE_OPTIMIZATION
-
 #include "SpacePartitioning.h"
 
 #include "GeometryCollection/GeometryCollectionConvexUtility.h"
@@ -257,8 +255,8 @@ void CellSpace::RenderCells() const
 
 		const int NrOfAgents = Cell.Agents.size();
 		const FVector CenterOffsetText = FVector(Extent.Y / 2.f, -Extent.X / 2.f, 0.f);
-		DrawDebugString(pWorld, Center + CenterOffsetText, FString::FromInt(NrOfAgents), 0,
-		                FColor::Red, 0.01f, false, 1.2f);
+		DrawDebugString(pWorld, Center + CenterOffsetText, FString::FromInt(NrOfAgents), 
+			nullptr, FColor::Red, 0.01f, false, 1.2f);
 	}
 }
 
