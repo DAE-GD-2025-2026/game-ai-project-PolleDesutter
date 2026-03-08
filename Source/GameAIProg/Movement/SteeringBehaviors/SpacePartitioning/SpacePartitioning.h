@@ -44,6 +44,8 @@ public:
 	//empties the cells of entities
 	void EmptyCells();
 	void RenderCells()const;
+	
+	bool IsPositionInPartitionSpace(const FVector2D& Pos) const;
 
 private:
 	// For debug draw purposes
