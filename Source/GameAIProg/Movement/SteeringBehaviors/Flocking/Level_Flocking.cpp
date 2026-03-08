@@ -53,5 +53,49 @@ void ALevel_Flocking::Tick(float DeltaTime)
 		UE_LOGFMT(LogTemp, Verbose, "MouseTarget Location: {Location}", MouseTarget.Position.ToString());
 		pFlock->SetTarget_Seek(MouseTarget);
 	}
+	
+	// Update Evade Agent's Seek Right Mouse Button
+
+	HandleRightMouseInput();
+	
+}
+
+
+void ALevel_Flocking::HandleRightMouseInput()
+{
+	const APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	if (!PlayerController)
+	{
+		return;
+	}
+
+	FVector MouseWorldPosition{};
+	const bool IsMouseWorldPosValid = UnrealHelpers::GetMouseWorldPosition(GetWorld(), PlayerController, MouseWorldPosition);
+	if (!IsMouseWorldPosValid)
+	{
+		return;
+	}
+	
+	if (!PlayerController)
+	{
+		UE_LOG(LogTemp, Error, TEXT("PlayerController not valid"));
+		UnrealHelpers::QuitGameOrPie(GetWorld());
+		return;
+	}
+
+	if (PlayerController->IsInputKeyDown(EKeys::RightMouseButton))
+	{
+		DrawDebugPoint(GetWorld(), MouseWorldPosition, 10.f, FColor::Black);
+		UE_LOGFMT(LogTemp, Verbose, "Input LeftMouse Raycast HitLocation: {HitLocation}",
+		          *MouseWorldPosition.ToString());
+
+		FSteeringParams TargetData{};
+		TargetData.Position = FVector2D(MouseWorldPosition.X, MouseWorldPosition.Y);
+		TargetData.Orientation = 0.f;
+		TargetData.LinearVelocity = FVector2D(0.f, 0.f);
+		TargetData.AngularVelocity = 0.f;
+		
+		pFlock->SetTarget_SeekEvadeAgent(TargetData);
+	}
 }
 

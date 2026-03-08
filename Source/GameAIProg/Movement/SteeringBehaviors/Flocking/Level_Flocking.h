@@ -21,6 +21,9 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	void HandleRightMouseInput();	
+	
+	
 	bool bUseMouseTarget{true};
 
 	const int FlockSize{ 100 };
@@ -29,6 +32,7 @@ protected:
 	
 	UPROPERTY(EditAnywhere, Category = "Flocking")
 	ASteeringAgent* pAgentToEvade{nullptr}; // non owning ref
+	
 	
 };
 
