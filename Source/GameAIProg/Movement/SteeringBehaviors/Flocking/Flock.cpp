@@ -17,7 +17,7 @@ Flock::Flock(UWorld* pWorld, TSubclassOf<ASteeringAgent> AgentClass, int FlockSi
 	
 #ifdef GAMEAI_USE_SPACE_PARTITIONING
 	pPartitionedSpace = std::make_unique<CellSpace>(pWorld, 2 * WorldSize, 2 * WorldSize, NrOfCellsX, NrOfCellsX, FlockSize);
-	OldPositions.SetNum(FlockSize);
+	OldPositions.Init(FVector2D::ZeroVector, FlockSize);
 #else
 	Neighbors.SetNum(FlockSize - 1);
 #endif	
@@ -26,6 +26,8 @@ Flock::Flock(UWorld* pWorld, TSubclassOf<ASteeringAgent> AgentClass, int FlockSi
 	pCohesionBehavior	= std::make_unique<Cohesion>(this);
 	pVelMatchBehavior	= std::make_unique<VelocityMatch>(this);
 
+	pSeekEvadeAgentBehavior	= std::make_unique<Seek>();
+	
 	pSeekBehavior			= std::make_unique<Seek>();
 	pWanderBehavior			= std::make_unique<Wander>();
 	pEvadeNearbyBehavior	= std::make_unique<EvadeNearby>();
@@ -43,8 +45,16 @@ Flock::Flock(UWorld* pWorld, TSubclassOf<ASteeringAgent> AgentClass, int FlockSi
 		UnrealHelpers::QuitGameOrPie(pWorld->GetWorld());
 		return;
 	}
-
-	pAgentToEvade->SetSteeringBehavior(pWanderBehavior.get());
+	
+	
+	const std::vector<BlendedSteering::WeightedBehavior> EvadeAgentWeightedBehaviors
+	{
+		{ pSeekEvadeAgentBehavior.get(),	0.0f	},
+		{ pWanderBehavior.get(),			1.0f	},
+	};
+	
+	pEvadeAgentBlendedSteering = std::make_unique<BlendedSteering>(EvadeAgentWeightedBehaviors);	
+	pAgentToEvade->SetSteeringBehavior(pEvadeAgentBlendedSteering.get());
 	pAgentToEvade->SetBodyMaterial(pAgentToEvade->GetRedBodyMaterial());
 	pAgentToEvade->SetDebugRenderingEnabled(DebugRenderSteering);	
 
@@ -115,6 +125,8 @@ Flock::Flock(UWorld* pWorld, TSubclassOf<ASteeringAgent> AgentClass, int FlockSi
 		{
 			UE_LOGFMT(LogTemp, Warning, "Agent {Index} failed to spawn at location: \t {SpawnPosition}", i,
 			          RandomSpawnPosition.ToString());
+			// don't go to the next index, because the agent is invalid
+			--i;
 			continue;
 		}
 
@@ -168,10 +180,28 @@ void Flock::Tick(float DeltaTime)
 
 #ifdef GAMEAI_USE_SPACE_PARTITIONING
 		
-		pPartitionedSpace->UpdateAgentCell(*pAgent, OldPositions[i]);
-		OldPositions[i] = pAgent->GetPosition();
-			
+		if (!OldPositions.IsValidIndex(i))
+		{
+			UE_LOGFMT(LogTemp, Warning, "OldPosition of index {Index} is not valid", i);
+			return;
+		}
+		const FVector2D OldPosition = OldPositions[i];
+		const FVector2D CurrentPosition = pAgent->GetPosition();
 		
+		if (pAgent->IsActorBeingDestroyed())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Actor being destroyed"));
+			return;	
+		}
+		pPartitionedSpace->UpdateAgentCell(*pAgent, OldPosition);
+		
+		// Update OldPositions only if the position is in the partition/cell space.
+		if (pPartitionedSpace->IsPositionInPartitionSpace(CurrentPosition))
+		{
+			OldPositions[i] = CurrentPosition;
+		}
+			
+		pPartitionedSpace->RegisterNeighbors(*pAgent, NeighborhoodRadius); 
 		
 #else
 		RegisterNeighbors(pAgent);
@@ -230,8 +260,8 @@ void Flock::ImGuiRender(ImVec2 const& WindowPos, ImVec2 const& WindowSize)
 		//Elements
 		ImGui::Text("CONTROLS");
 		ImGui::Indent();
-		ImGui::Text("LMB: place target");
-		ImGui::Text("RMB: move cam.");
+		ImGui::Text("LMB: place target (flock target)");
+		ImGui::Text("RMB: place target (wander agent target).");
 		ImGui::Text("Scroll wheel: zoom cam.");
 		ImGui::Unindent();
 
@@ -318,7 +348,7 @@ void Flock::ImGuiRender(ImVec2 const& WindowPos, ImVec2 const& WindowSize)
 
 		
 
-		ImGui::Text("(Blended) Behavior Weights");
+		ImGui::Text("Evading Flock Behavior Weights");
 		ImGui::Spacing();
 		ImGui::Spacing();
 
@@ -364,6 +394,24 @@ void Flock::ImGuiRender(ImVec2 const& WindowPos, ImVec2 const& WindowSize)
 			}, "%.2f");
 
 		
+		ImGui::Text("Agent To Evade Behavior Weights:");
+		
+		ImGuiHelpers::ImGuiSliderFloatWithSetter(
+		"Seek ",
+		pEvadeAgentBlendedSteering->GetWeightedBehaviorsRef()[0].Weight, 0.0f, 1.0f,
+		[this](const float InVal)
+		{
+			pEvadeAgentBlendedSteering->GetWeightedBehaviorsRef()[0].Weight = InVal;
+		}, "%.2f");
+
+		ImGuiHelpers::ImGuiSliderFloatWithSetter(
+			"Wander ",
+			pEvadeAgentBlendedSteering->GetWeightedBehaviorsRef()[1].Weight, 0.0f, 1.0f,
+			[this](const float InVal)
+			{
+				pEvadeAgentBlendedSteering->GetWeightedBehaviorsRef()[1].Weight = InVal;
+			}, "%.2f");
+
 
 		ImGui::Text("Radii");
 		ImGui::Spacing();
@@ -551,7 +599,12 @@ FVector2D Flock::GetAverageNeighborVelocity() const
 	return AvgVelocity;
 }
 
-void Flock::SetTarget_Seek(FSteeringParams const& Target) const
+void Flock::SetTarget_Seek(const FSteeringParams& Target) const
 {
 	pSeekBehavior->SetTarget(Target);
+}
+
+void Flock::SetTarget_SeekEvadeAgent(const FSteeringParams& Target) const
+{
+	pSeekEvadeAgentBehavior->SetTarget(Target);
 }
