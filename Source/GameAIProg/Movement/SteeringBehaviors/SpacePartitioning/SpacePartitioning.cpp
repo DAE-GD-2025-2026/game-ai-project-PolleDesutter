@@ -1,5 +1,6 @@
 #include "SpacePartitioning.h"
 
+#include "AI/NavigationModifier.h"
 #include "GeometryCollection/GeometryCollectionConvexUtility.h"
 
 // NOTE: Y is horizontal and X is Vertical (for some reason)
@@ -182,7 +183,7 @@ void CellSpace::UpdateAgentCell(ASteeringAgent& Agent, const FVector2D& OldPos)
 	Cells[NewCellIndex].Agents.push_back(&Agent);
 }
 
-void CellSpace::RegisterNeighbors(const ASteeringAgent& Agent, float QueryRadius)
+void CellSpace::RegisterNeighbors(const ASteeringAgent& Agent, float QueryRadius, bool RenderNeighborhoodCells)
 {
 	NrOfNeighbors = 0;
 
@@ -195,25 +196,40 @@ void CellSpace::RegisterNeighbors(const ASteeringAgent& Agent, float QueryRadius
 		return;
 	}
 
-	const Cell& CurrentCell = Cells[CellIndex];
-	const FRect CurrentCellBoundingBox = CurrentCell.BoundingBox;
+	FRect CurrentAgentBoundingBox;
+	CurrentAgentBoundingBox.Min.X = Agent.GetPosition().X - QueryRadius;
+	CurrentAgentBoundingBox.Min.Y = Agent.GetPosition().Y - QueryRadius;
+	CurrentAgentBoundingBox.Max.X = Agent.GetPosition().X + QueryRadius;
+	CurrentAgentBoundingBox.Max.Y = Agent.GetPosition().Y + QueryRadius;
 
-	for (const auto& OtherCell : Cells)
+	if (RenderNeighborhoodCells)
 	{
-		if (&CurrentCell == &OtherCell)
+		const FVector Center = FVector(Agent.GetPosition(), 0.f);
+		DrawDebugBox(pWorld, Center, FVector(QueryRadius, QueryRadius, QueryRadius), 
+			FColor::Yellow);
+	}
+		
+	for (const auto& Cell : Cells)
+	{
+		if (!DoRectsOverlap(CurrentAgentBoundingBox, Cell.BoundingBox))
 		{
 			continue;
 		}
-
-		if (!DoRectsOverlap(CurrentCellBoundingBox, OtherCell.BoundingBox))
+		
+		if (RenderNeighborhoodCells)
 		{
-			continue;
+			const FVector Center = FVector(UnrealHelpers::GetCenter(Cell.BoundingBox), 0);
+			const FVector Extent(CellHeight / 2.f, CellWidth / 2.f, 0.0f);
+			DrawDebugBox(pWorld, Center, Extent, FColor::Purple);
 		}
 
-
-		for (const auto& Neighbor : OtherCell.Agents)
+		for (const auto& Neighbor : Cell.Agents)
 		{
 			if (!Neighbor)
+			{
+				continue;
+			}
+			if (Neighbor == &Agent)
 			{
 				continue;
 			}
@@ -236,6 +252,7 @@ void CellSpace::RegisterNeighbors(const ASteeringAgent& Agent, float QueryRadius
 	}
 }
 
+
 void CellSpace::EmptyCells()
 {
 	for (Cell& Cell : Cells)
@@ -257,6 +274,9 @@ void CellSpace::RenderCells() const
 		const FVector CenterOffsetText = FVector(Extent.Y / 2.f, -Extent.X / 2.f, 0.f);
 		DrawDebugString(pWorld, Center + CenterOffsetText, FString::FromInt(NrOfAgents), 
 			nullptr, FColor::Red, 0.01f, false, 1.2f);
+		
+		
+		
 	}
 }
 

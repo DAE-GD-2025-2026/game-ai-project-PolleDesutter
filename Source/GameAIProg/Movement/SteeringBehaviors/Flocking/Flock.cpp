@@ -463,7 +463,7 @@ void Flock::RenderNeighborhood()
 	
 
 #ifdef GAMEAI_USE_SPACE_PARTITIONING
-	pPartitionedSpace->RegisterNeighbors(*FirstAgent, NeighborhoodRadius);
+	pPartitionedSpace->RegisterNeighbors(*FirstAgent, NeighborhoodRadius, DebugRenderNeighborhood);
 #else
 	RegisterNeighbors(FirstAgent);
 #endif
