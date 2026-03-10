@@ -235,7 +235,6 @@ void Flock::RenderDebug()
 			
 		}
 
-		// TODO: Add Debug when spacial partitioning is done
 		if (DebugRenderPartitions)
 		{
 #ifdef GAMEAI_USE_SPACE_PARTITIONING
@@ -449,7 +448,6 @@ void Flock::ImGuiRender(ImVec2 const& WindowPos, ImVec2 const& WindowSize)
 
 void Flock::RenderNeighborhood()
 {
-	// TODO: Debug Render the neighbors for the first agent in the flock
 	if (Agents.IsEmpty())
 	{
 		return;

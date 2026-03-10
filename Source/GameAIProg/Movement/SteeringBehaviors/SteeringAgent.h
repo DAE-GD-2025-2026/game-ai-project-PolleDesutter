@@ -112,3 +112,4 @@ protected:
 	bool DebugBehaviorTextEnabled{ false };
 	
 };
+
