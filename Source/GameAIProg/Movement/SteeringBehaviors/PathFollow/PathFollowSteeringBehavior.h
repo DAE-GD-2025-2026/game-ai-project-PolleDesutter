@@ -11,6 +11,7 @@ public:
 	virtual ~PathFollow() override;
 	void SetPath(std::vector<FVector2D>& path);
 	virtual SteeringOutput CalculateSteering(float DeltaTime, ASteeringAgent & Agent) override;
+	virtual FString GetClassName() override { return CLASS_NAME_FSTRING; }
 
 private:
 	Seek* pSeek = nullptr;

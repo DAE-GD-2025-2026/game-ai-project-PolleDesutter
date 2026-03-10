@@ -89,6 +89,7 @@ public:
 	Arrive() = default;
 	virtual ~Arrive() override = default;
 	
+	void SetTargetRadius(float Radius) { TargetRadius = Radius; }
 	virtual SteeringOutput CalculateSteering(float DeltaT, ASteeringAgent & Agent) override;
 	virtual FString GetClassName() override { return CLASS_NAME_FSTRING; }
 	
