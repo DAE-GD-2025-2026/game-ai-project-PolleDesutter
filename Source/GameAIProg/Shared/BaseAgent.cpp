@@ -1,6 +1,4 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "BaseAgent.h"
 
 
@@ -32,11 +30,15 @@ void ABaseAgent::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 
 void ABaseAgent::SetBodyMaterial(UMaterialInterface* Material) const
 {
-	if (GetMesh()->GetNumMaterials() < BodyMaterialIndex)
+	if (GetMesh()->GetNumMaterials() < BodyMaterialIndex || BodyMaterialIndex < 0)
+	{
 		return;
+	}
 	
 	if (!Material)
+	{
 		return;
+	}
 	
 	GetMesh()->SetMaterial(BodyMaterialIndex, Material);
 }

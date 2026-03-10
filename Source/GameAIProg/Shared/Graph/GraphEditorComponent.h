@@ -45,7 +45,7 @@ public:
 
 	void SetEditedGraph(GameAI::Graph* pEditedGraph) { EditedGraph = pEditedGraph; }
 	void SetNodeFactory(GameAI::IGraphNodeFactory* pNodeFactory) { NodeFactory = pNodeFactory; }
-	bool HasGraphUpdated();
+	bool HasGraphUpdated() const;
 
 protected:
 	// Called when the game starts
@@ -60,8 +60,8 @@ private:
 	UPROPERTY()
 	APlayerController* PlayerController{};
 	
-	int DefaultInputPriority{1};
-	int NodeHoverInputPriority{2}; // should be higher than default
+	int DefaultInputPriority{ 1 };
+	int NodeHoverInputPriority{ 2 }; // should be higher than default
 	
 	// Graph
 	GameAI::Graph* EditedGraph{};
@@ -75,12 +75,12 @@ private:
 	// Mouse
 	FVector LatestMousePos{};
 	
-	void UpdateConditionalInputMapping();
+	void UpdateConditionalInputMapping() const;
 	void UpdateCurrentlyHoveredNode();
-	void UpdateNodeMovement();
+	void UpdateNodeMovement() const;
 	
 	template<typename NodeType>
-	float GetNodeRadius(NodeType& Node)
+	static float GetNodeRadius(NodeType& Node)
 	{
 		float NodeRadius = GameAI::Graphs::DefaultNodeDrawRadius;
 		if constexpr(requires {{Node.GetRadius()} -> std::convertible_to<float>;})
@@ -91,10 +91,10 @@ private:
 	}
 
 	bool GetEnhancedInput();
-	bool IsHoveringOverNode();
+	bool IsHoveringOverNode() const;
 	std::optional<FVector> GetMouseWorldPos() const;
 	
-	// Actions funcs
+	// Actions functions
 	void CreateNode();
 	void InvalidateNode();
 	void MoveNodeBegin();

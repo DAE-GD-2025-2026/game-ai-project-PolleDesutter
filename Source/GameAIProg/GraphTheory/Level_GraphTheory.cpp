@@ -20,6 +20,8 @@ void ALevel_GraphTheory::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	Renderer = GraphRenderer(GetWorld());
+	
 	// Add the graph editor to our player
 	if (PlayerController = Cast<APlayerController>(GetWorld()->GetFirstLocalPlayerFromController()->PlayerController); 
 		GraphEditorClass && PlayerController)

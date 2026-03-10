@@ -3,7 +3,6 @@
 #include <memory>
 #include <vector>
 #include <algorithm>
-#include <ranges>
 
 namespace GameAI
 {
@@ -105,3 +104,4 @@ namespace GameAI
         std::vector<std::unique_ptr<Connection>> Connections;
     };
 }
+

@@ -2,17 +2,17 @@
 
 namespace GameAI
 {
-	GraphRenderer::GraphRenderer(UWorld* world)
-	: World{world}
+	GraphRenderer::GraphRenderer(UWorld* pWorld)
+	: World{ pWorld }
 	{
 	}
 
-	void GraphRenderer::SetRenderOptions(GraphRenderOptions const& NewOptions)
+	void GraphRenderer::SetRenderOptions(const GraphRenderOptions& NewOptions)
 	{
 		Options = NewOptions;
 	}
 
-	void GraphRenderer::RenderGraph(Graph const &  Graph) const
+	void GraphRenderer::RenderGraph(const Graph&  Graph) const
 	{
 		if (Options.bDrawNodes)
 		{
@@ -28,7 +28,7 @@ namespace GameAI
 
 		if (Options.bDrawNodes)
 		{
-			for (auto& Connection : Graph.GetConnections())
+			for (const auto& Connection : Graph.GetConnections())
 			{
 				DrawConnection(Graph, *Connection);
 			}
@@ -36,5 +36,4 @@ namespace GameAI
 
 	}
 }
-
 

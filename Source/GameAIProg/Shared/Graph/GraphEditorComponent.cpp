@@ -13,7 +13,7 @@ UGraphEditorComponent::UGraphEditorComponent()
 }
 
 
-bool UGraphEditorComponent::HasGraphUpdated()
+bool UGraphEditorComponent::HasGraphUpdated() const
 {
 	return bHasGraphUpdated;
 }
@@ -65,23 +65,23 @@ void UGraphEditorComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 	UpdateConditionalInputMapping();
 	
 	// Update latest MousePos
-	if (auto MousePosOptional = GetMouseWorldPos(); MousePosOptional.has_value())
+	if (const auto MousePosOptional = GetMouseWorldPos(); MousePosOptional.has_value())
 	{
 		LatestMousePos = *MousePosOptional;
 	}
 	
-	// If we're moving a node, move it to the mousepos
+	// If we're moving a node, move it to the mouse position
 	UpdateNodeMovement();
 
 	// if we're adding a connection, debug draw it 
 	if (bIsCreatingConnection)
 	{
-		FVector StartLine{EditedGraph->GetNode(LastTappedNodeId)->GetPosition(), GameAI::Graphs::DefaultGraphDrawHeight};
+		const FVector StartLine{EditedGraph->GetNode(LastTappedNodeId)->GetPosition(), GameAI::Graphs::DefaultGraphDrawHeight};
 		DrawDebugLine(GetWorld(), StartLine, LatestMousePos, FColor::Green);
 	}
 }
 
-void UGraphEditorComponent::UpdateConditionalInputMapping()
+void UGraphEditorComponent::UpdateConditionalInputMapping() const
 {
 	if (IsHoveringOverNode() && 
 		!EnhancedInputSubsystem->HasMappingContext(NodeHoverGraphEditingIMC))
@@ -118,7 +118,7 @@ void UGraphEditorComponent::UpdateCurrentlyHoveredNode()
 	CurrentlyHoveredNodeId = GameAI::Graphs::InvalidNodeId;
 }
 
-void UGraphEditorComponent::UpdateNodeMovement()
+void UGraphEditorComponent::UpdateNodeMovement() const
 {
 	if (!bIsMovingNode)
 	{
@@ -130,14 +130,14 @@ void UGraphEditorComponent::UpdateNodeMovement()
 
 bool UGraphEditorComponent::GetEnhancedInput()
 {
-	auto* PlayerOwner = Cast<APawn>(GetOwner());
-	if (auto* pPlayerController = Cast<APlayerController>(PlayerOwner->GetController()); 
-		PlayerOwner && pPlayerController)
+	const auto* PlayerOwner = Cast<APawn>(GetOwner());
+	if (auto* PPlayerController = Cast<APlayerController>(PlayerOwner->GetController()); 
+		PlayerOwner && PPlayerController)
 	{
 		// We're also setting the controller but shhhhh
-		PlayerController = pPlayerController;
+		PlayerController = PPlayerController;
 		
-		if (auto* LocalPlayer = pPlayerController->GetLocalPlayer(); LocalPlayer)
+		if (const auto* LocalPlayer = PPlayerController->GetLocalPlayer(); LocalPlayer)
 		{
 			if (auto* Subsystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(); Subsystem)
 			{
@@ -145,7 +145,7 @@ bool UGraphEditorComponent::GetEnhancedInput()
 			}
 		}
 		
-		if (auto* Component = Cast<UEnhancedInputComponent>(pPlayerController->InputComponent); Component)
+		if (auto* Component = Cast<UEnhancedInputComponent>(PPlayerController->InputComponent); Component)
 		{
 			EnhancedInputComponent = Component;
 		}
@@ -155,7 +155,7 @@ bool UGraphEditorComponent::GetEnhancedInput()
 	return EnhancedInputSubsystem && EnhancedInputComponent;
 }
 
-bool UGraphEditorComponent::IsHoveringOverNode()
+bool UGraphEditorComponent::IsHoveringOverNode() const
 {
 	return CurrentlyHoveredNodeId != GameAI::Graphs::InvalidNodeId;
 }
@@ -172,8 +172,8 @@ std::optional<FVector> UGraphEditorComponent::GetMouseWorldPos() const
 	FVector MouseWorldDirection{};
 	PlayerController->DeprojectMousePositionToWorld(MouseWorldPos, MouseWorldDirection);
 	
-	// TODO FIXME move to level and just provide a set latest mousepos func?
-	float MaxTraceDistance{20000.0f};
+	// TODO FIXME move to level and just provide a set latest mouse position func?
+	float MaxTraceDistance{ 20000.0f };
 
 	if (FHitResult HitResult{}; 
 		GetWorld()->LineTraceSingleByChannel(HitResult, MouseWorldPos,
@@ -239,7 +239,4 @@ void UGraphEditorComponent::CreateConnection()
 		LastTappedNodeId = GameAI::Graphs::InvalidNodeId;
 	}
 }
-
-
-
 

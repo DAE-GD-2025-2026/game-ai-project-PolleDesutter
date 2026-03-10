@@ -137,8 +137,11 @@ namespace GameAI
 
     int Graph::GetNodeCount() const
     {
-        return std::count_if(Nodes.begin(), Nodes.end(),
-            [](auto const& Element) { return Element->GetId() >= 0; });
+        return std::ranges::count_if(Nodes,
+            [](auto const& Element)
+            {
+                return Element->GetId() >= 0;
+            });
     }
 
     std::unique_ptr<Node> const& Graph::GetNode(int NodeId) const
@@ -154,7 +157,7 @@ namespace GameAI
     int Graph::AddNode(std::unique_ptr<Node> NewNode)
     {
         // reuse invalidated node slots if possible
-        if (auto InvalidIndex = GetFirstInvalidNodeIdx(); InvalidIndex.has_value())
+        if (const auto InvalidIndex = GetFirstInvalidNodeIdx(); InvalidIndex.has_value())
         {
             Nodes[InvalidIndex.value()].reset();
             NewNode->SetId(InvalidIndex.value());

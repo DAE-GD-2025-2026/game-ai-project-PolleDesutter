@@ -39,24 +39,24 @@ public:
 	
 	// BaseAgent Interface
 	FVector2D GetPosition() const { return FVector2D{GetActorLocation().X, GetActorLocation().Y}; }
-	void SetPosition(FVector2D const & NewPosition) { SetActorLocation(FVector{NewPosition, GetActorLocation().Z}); }
+	void SetPosition(const FVector2D& NewPosition) { SetActorLocation(FVector{NewPosition, GetActorLocation().Z}); }
 	float GetRotation() const { return GetActorRotation().Yaw; }
 	
 	float GetMaxLinearSpeed() const { return GetCharacterMovement()->GetMaxSpeed(); }
-	void SetMaxLinearSpeed(float MaxSpeed) { GetCharacterMovement()->MaxWalkSpeed = MaxSpeed; }
+	void SetMaxLinearSpeed(float MaxSpeed) const { GetCharacterMovement()->MaxWalkSpeed = MaxSpeed; }
 
 	FVector2D GetLinearVelocity() const { return FVector2D{GetCharacterMovement()->Velocity}; }
 
 	float GetMaxAngularSpeed() const { return GetCharacterMovement()->RotationRate.Yaw; }
-	void SetMaxAngularSpeed(float maxAngularSpeed) { GetCharacterMovement()->RotationRate.Yaw = maxAngularSpeed; }
+	void SetMaxAngularSpeed(float MaxAngularSpeed) const { GetCharacterMovement()->RotationRate.Yaw = MaxAngularSpeed; }
 
 	float GetAngularVelocity() const { return GetCharacterMovement()->GetLastUpdateRotation().Yaw - GetActorRotation().Yaw; }
 
 	bool IsAutoOrienting() const { return GetCharacterMovement()->bOrientRotationToMovement; }
-	void SetIsAutoOrienting(bool bAutoOrient) { GetCharacterMovement()->bOrientRotationToMovement = bAutoOrient; }
+	void SetIsAutoOrienting(bool bAutoOrient) const { GetCharacterMovement()->bOrientRotationToMovement = bAutoOrient; }
 
 	float GetMass() const { return GetCharacterMovement()->Mass; }
-	void SetMass(float Mass) { GetCharacterMovement()->Mass = Mass; }
+	void SetMass(float Mass) const { GetCharacterMovement()->Mass = Mass; }
 
 	bool GetDebugRenderingEnabled() const { return bIsDebugRenderingEnabled; }
 	void SetDebugRenderingEnabled(bool IsEnabled) { this->bIsDebugRenderingEnabled = IsEnabled; }

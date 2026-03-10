@@ -28,10 +28,10 @@ namespace GameAI
 	class GraphRenderer final
 	{
 	public:
-		explicit GraphRenderer(UWorld* world);
+		explicit GraphRenderer(UWorld* World);
 		~GraphRenderer() = default;
 		
-		void SetRenderOptions(GraphRenderOptions const & NewOptions);
+		void SetRenderOptions(const GraphRenderOptions& NewOptions);
 		
 		void RenderGraph(Graph const & Graph) const;
 
@@ -53,8 +53,8 @@ namespace GameAI
 	
 	template <typename NodeType>
 	requires GameAI::is_drawable_node<NodeType>
-	void GraphRenderer::DrawNode(NodeType const & Node, float Radius,
-		FColor Color, float DrawHeight, int Segments) const
+	void GraphRenderer::DrawNode(NodeType const & Node, float Radius, FColor Color, 
+		float DrawHeight, int Segments) const
 	{
 		// If data exists, use it instead
 		if constexpr (requires {{Node.GetRadius()} -> std::convertible_to<float>;})
@@ -65,15 +65,19 @@ namespace GameAI
 		{
 			Color = Node.GetColor();
 		}
+
+		const FTransform DrawTransform
+		{
+			FVector::UpVector.ToOrientationRotator(), 
+			FVector{Node.GetPosition(), DrawHeight}
+		};
 		
-		FTransform DrawTransform{FVector::UpVector.ToOrientationRotator(),
-			FVector{Node.GetPosition(), DrawHeight}};
 		DrawDebugCircle(World, DrawTransform.ToMatrixNoScale(), Radius, Segments, Color, 
 			false, -1, 0, 3);
 
 		if (Options.bDrawConnections)
 		{
-			FString NodeId{FString::Printf(TEXT("%d"), static_cast<int>(Node.GetId()))};
+			const FString NodeId{FString::Printf(TEXT("%d"), static_cast<int>(Node.GetId()))};
 			DrawDebugString(World, DrawTransform.GetLocation(), NodeId,nullptr, FColor::White, 0);
 		}
 	}
@@ -87,9 +91,9 @@ namespace GameAI
 		{
 			Color = Connection.GetColor();
 		}
-		
-		FVector Start{Graph.GetNode(Connection.GetFromId())->GetPosition(), Graphs::DefaultGraphDrawHeight};
-		FVector End{Graph.GetNode(Connection.GetToId())->GetPosition(), Graphs::DefaultGraphDrawHeight};
+
+		const FVector Start{Graph.GetNode(Connection.GetFromId())->GetPosition(), Graphs::DefaultGraphDrawHeight};
+		const FVector End{Graph.GetNode(Connection.GetToId())->GetPosition(), Graphs::DefaultGraphDrawHeight};
 	
 		if (!Graph.GetIsDirectional())
 		{
@@ -105,9 +109,9 @@ namespace GameAI
 		// Draw weight (if not 0)
 		if (Options.bDrawConnectionWeights && !FMath::IsNearlyZero(Connection.GetWeight()))
 		{
-			FVector Middle = End + (Start - End) / 2;
+			const FVector Middle = End + (Start - End) / 2;
+			const FString WeightString{FString::Printf(TEXT("%d"), static_cast<int>(Connection.GetWeight()))};
 			
-			FString WeightString{FString::Printf(TEXT("%d"), static_cast<int>(Connection.GetWeight()))};
 			DrawDebugString(World, Middle, WeightString,nullptr, FColor::White, 0);
 		}
 	}

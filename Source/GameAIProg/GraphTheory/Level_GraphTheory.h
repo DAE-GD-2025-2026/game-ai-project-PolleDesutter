@@ -27,17 +27,17 @@ public:
 
 protected:
 	UPROPERTY()
-	APlayerController* PlayerController{nullptr};
+	APlayerController* PlayerController{ nullptr };
 	
 	virtual void BeginPlay() override;
 	virtual void BeginDestroy() override;
 
 private:
 	UPROPERTY()
-	ASteeringAgent* Agent{nullptr}; // ref
+	ASteeringAgent* Agent{}; // ref
 	PathFollow PathFollow{};
-	GameAI::Graph Graph{false};
-	GameAI::GraphRenderer Renderer{nullptr};
+	GameAI::Graph Graph{ false };
+	GameAI::GraphRenderer Renderer{ nullptr };
 	GameAI::GraphNodeFactory<GameAI::Node> NodeFactory{};
 	
 	UPROPERTY()
@@ -45,3 +45,4 @@ private:
 	
 	void UpdateAgentPath( std::vector<GameAI::Node*> const & Trail);
 };
+
