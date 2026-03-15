@@ -17,7 +17,7 @@ namespace GameAI
 		EulerianPath(Graph* const Graph);
 
 		Eulerianity IsEulerian() const;
-		std::vector<Node*> FindPath(const Eulerianity& Eulerianity) const;
+		std::vector<Node*> FindPath(Eulerianity& OutEulerianity) const;
 
 	private:
 		void VisitAllNodesDFS(const std::vector<Node*>& Nodes, std::vector<bool>& Visited, int StartIndex) const;
@@ -73,7 +73,7 @@ namespace GameAI
 		return Eulerianity::NotEulerian;
 	}
 
-	inline std::vector<Node*> EulerianPath::FindPath(const Eulerianity& GraphEulerianity) const
+	inline std::vector<Node*> EulerianPath::FindPath(Eulerianity& OutEulerianity) const
 	{
 		// Get a copy of the graph because this algorithm involves removing edges
 		Graph GraphCopy = pGraph->Clone();
@@ -81,6 +81,8 @@ namespace GameAI
 		std::vector<Node*> Nodes = GraphCopy.GetActiveNodes();
 		int CurrentNodeId{ Graphs::InvalidNodeId };
 		
+		// Get Eulerianity
+		OutEulerianity = IsEulerian();
 		
 		if (Nodes.empty())
 		{
@@ -88,13 +90,12 @@ namespace GameAI
 			return Path;
 		}
 		
-		
 		// Check if there can be an Euler path
-		if (GraphEulerianity == Eulerianity::Eulerian)
+		if (OutEulerianity == Eulerianity::Eulerian)
 		{
 			CurrentNodeId = Nodes[0]->GetId();
 		}
-		else if (GraphEulerianity == Eulerianity::SemiEulerian)
+		else if (OutEulerianity == Eulerianity::SemiEulerian)
 		{
 			// Choose node with odd degree		
 			auto OddDegreeNodeIt = std::ranges::find_if(Nodes, 
@@ -115,7 +116,7 @@ namespace GameAI
 			CurrentNodeId = (*OddDegreeNodeIt)->GetId();
 			
 		}
-		else if (GraphEulerianity == Eulerianity::NotEulerian)
+		else if (OutEulerianity == Eulerianity::NotEulerian)
 		{
 			// If this graph is not eulerian, return the empty path
 			return Path;
@@ -123,7 +124,7 @@ namespace GameAI
 		
 	
 		// Start algorithm loop
-		std::stack<int> NodeIdStack;
+		std::stack<int> NodeIdStack{};
 		
 		
 		// https://web.archive.org/web/20240920214900/https://www.graph-magics.com/articles/euler.php
@@ -150,6 +151,7 @@ namespace GameAI
 				// set currentNode as path, and go back
 				Path.push_back(pGraph->GetNode(CurrentNodeId).get());
 				CurrentNodeId = NodeIdStack.top();
+				NodeIdStack.pop();
 				
 				continue;
 			}
@@ -223,17 +225,17 @@ namespace GameAI
 		std::vector<bool> HasNodeBeenVisitedList(Nodes.size(), false);
 
 		// Choose a starting node
-		int StartingNodeIdx = Graphs::InvalidNodeId;
+		int StartingNodeIndex = Graphs::InvalidIndex;
 		for (const auto Node : Nodes)
 		{
-			const auto Connections = pGraph->FindConnectionsFrom(StartingNodeIdx);	
+			const auto Connections = pGraph->FindConnectionsFrom(Node->GetId());	
 			if (Connections.empty())
 			{
 				continue;
 			}
 			
-			StartingNodeIdx = Node->GetId();
-			if (StartingNodeIdx == Graphs::InvalidNodeId)
+			StartingNodeIndex = Node->GetId();
+			if (StartingNodeIndex == Graphs::InvalidIndex)
 			{
 				continue;
 			}
@@ -241,13 +243,13 @@ namespace GameAI
 			break;
 		}
 		
-		if (StartingNodeIdx == Graphs::InvalidNodeId)
+		if (StartingNodeIndex == Graphs::InvalidIndex)
 		{
 			return false;
 		}
 		
 		// Start a depth-first-search traversal from the node that has at least one connection
-		VisitAllNodesDFS(Nodes, HasNodeBeenVisitedList,  StartingNodeIdx);
+		VisitAllNodesDFS(Nodes, HasNodeBeenVisitedList,  StartingNodeIndex);
 		
 		// If a node was never visited, this graph is not connected
 		const bool HaveAllNodesBeenVisitedList = std::ranges::all_of(HasNodeBeenVisitedList, 
