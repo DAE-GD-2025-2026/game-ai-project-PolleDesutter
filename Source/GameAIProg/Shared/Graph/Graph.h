@@ -9,6 +9,7 @@ namespace GameAI
     namespace Graphs
     {
         static int constexpr InvalidNodeId = -1;
+        static int constexpr InvalidIndex = -1;
     }
 
     // Forward declarations
