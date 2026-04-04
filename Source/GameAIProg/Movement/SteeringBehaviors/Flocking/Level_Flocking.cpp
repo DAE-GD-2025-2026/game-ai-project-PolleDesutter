@@ -61,29 +61,29 @@ void ALevel_Flocking::Tick(float DeltaTime)
 }
 
 
-void ALevel_Flocking::HandleRightMouseInput()
+void ALevel_Flocking::HandleRightMouseInput() const
 {
-	const APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	if (!PlayerController)
+	const APlayerController* PC = GetWorld()->GetFirstPlayerController();
+	if (!PC)
 	{
 		return;
 	}
 
 	FVector MouseWorldPosition{};
-	const bool IsMouseWorldPosValid = UnrealHelpers::GetMouseWorldPosition(GetWorld(), PlayerController, MouseWorldPosition);
+	const bool IsMouseWorldPosValid = UnrealHelpers::GetMouseWorldPosition(GetWorld(), PC, MouseWorldPosition);
 	if (!IsMouseWorldPosValid)
 	{
 		return;
 	}
 	
-	if (!PlayerController)
+	if (!PC)
 	{
 		UE_LOG(LogTemp, Error, TEXT("PlayerController not valid"));
 		UnrealHelpers::QuitGameOrPie(GetWorld());
 		return;
 	}
 
-	if (PlayerController->IsInputKeyDown(EKeys::RightMouseButton))
+	if (PC->IsInputKeyDown(EKeys::RightMouseButton))
 	{
 		DrawDebugPoint(GetWorld(), MouseWorldPosition, 10.f, FColor::Black);
 		UE_LOGFMT(LogTemp, Verbose, "Input LeftMouse Raycast HitLocation: {HitLocation}",

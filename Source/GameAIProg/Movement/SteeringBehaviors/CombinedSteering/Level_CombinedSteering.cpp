@@ -72,22 +72,22 @@ void ALevel_CombinedSteering::BeginDestroy()
 	Super::BeginDestroy();
 }
 
-void ALevel_CombinedSteering::HandleLeftMouseInput(const APlayerController* PlayerController,
+void ALevel_CombinedSteering::HandleLeftMouseInput(const APlayerController* CurrentPlayerController,
                                                    const FVector& MouseWorldPosition)
 {
-	if (!PlayerController)
+	if (!CurrentPlayerController)
 	{
 		UE_LOG(LogTemp, Error, TEXT("PlayerController not valid"));
 		UnrealHelpers::QuitGameOrPie(GetWorld());
 		return;
 	}
 
-	if (!PlayerController->IsInputKeyDown(EKeys::LeftMouseButton))
+	if (!CurrentPlayerController->IsInputKeyDown(EKeys::LeftMouseButton))
 	{
 		IsHoldingLeftButton = false;
 	}
 
-	if (PlayerController->IsInputKeyDown(EKeys::LeftMouseButton))
+	if (CurrentPlayerController->IsInputKeyDown(EKeys::LeftMouseButton))
 	{
 		if (IsHoldingLeftButton)
 		{

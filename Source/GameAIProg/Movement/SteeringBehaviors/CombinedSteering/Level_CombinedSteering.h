@@ -57,7 +57,7 @@ private:
 	TArray<FVector2D> EvadingAgentsPositions{};
 
 	
-	void HandleLeftMouseInput(const APlayerController* PlayerController, const FVector& MouseWorldPosition);
+	void HandleLeftMouseInput(const APlayerController* CurrentPlayerController, const FVector& MouseWorldPosition);
 
 	
 };
