@@ -35,7 +35,23 @@ namespace GameAI
     {
         return Id == OtherPtr->Id;
     }
-    
+
+    TerrainNode::TerrainNode(FVector2D const& Position, Type Type)
+        : Node{Position}
+        , Terrain{Type}
+    {
+    }
+
+    void TerrainNode::SetType(Type NewType)
+    {
+        Terrain = NewType;
+    }
+
+    TerrainNode::Type TerrainNode::GetType() const
+    {
+        return Terrain;
+    }
+
 #pragma endregion Nodes
 
 #pragma region Connections
@@ -205,12 +221,12 @@ namespace GameAI
 
     Connection* Graph::FindConnection(int FromId, int ToId)
     {
-        auto it = std::find_if(Connections.begin(), Connections.end(),
-            [=](auto const& Element)
-            {
-                return Element->GetFromId() == FromId && Element->GetToId() == ToId;
-            });
-        return it != Connections.end() ? it->get() : nullptr;
+        const auto FoundConnectionIt = std::ranges::find_if(Connections,
+             [=](auto const& Element)
+             {
+                 return Element->GetFromId() == FromId && Element->GetToId() == ToId;
+             });
+        return FoundConnectionIt != Connections.end() ? FoundConnectionIt->get() : nullptr;
     }
 
     std::vector<Connection*> Graph::FindConnectionsFrom(int NodeId) const
@@ -235,20 +251,30 @@ namespace GameAI
         return Result;
     }
 
+    std::vector<Connection*> Graph::FindConnectionsWith(int NodeId) const
+    {
+        std::vector<Connection*> Result{};
+        auto FromConnections = FindConnectionsFrom(NodeId);
+        auto ToConnections = FindConnectionsTo(NodeId);
+        std::ranges::move(FromConnections, std::back_inserter(Result));
+        std::ranges::move(ToConnections, std::back_inserter(Result));
+        return Result;
+    }
+
     void Graph::AddConnection(std::unique_ptr<Connection> NewConnection)
     {
         // Get an inverse copy for later
         auto InverseNew = NewConnection->GetInverseCopy();
         
         // Check if the connection already exists
-        auto Found = std::find_if(Connections.begin(), Connections.end(),
-            [&](auto const& Existing)
-            {
-                return Existing->GetFromId() == NewConnection->GetFromId() &&
-                       Existing->GetToId() == NewConnection->GetToId();
-            });
+        const auto FoundConnectionIt = std::ranges::find_if(Connections,
+              [&](auto const& Existing)
+              {
+                  return Existing->GetFromId() == NewConnection->GetFromId() &&
+                      Existing->GetToId() == NewConnection->GetToId();
+              });
 
-        if (Found != Connections.end())
+        if (FoundConnectionIt != Connections.end())
         {
             UE_LOG(LogTemp, Warning, TEXT("Attempted to add a connection already in the graph!"));
             return;
@@ -294,9 +320,21 @@ namespace GameAI
         {
             return RemoveConnection(FindResult);
         }
-        UE_LOG(LogTemp, Warning, TEXT("Attempted to remove non-existant connection from %d to %d"),
+        UE_LOG(LogTemp, Warning, TEXT("Attempted to remove non-existent connection from %d to %d"),
             FromNodeId, ToNodeId);
         return false;
+    }
+
+    bool Graph::RemoveConnectionsFrom(int FromId)
+    {
+        return 0 < std::erase_if(Connections,
+            [=](auto const & Connection){return Connection->GetFromId() == FromId;});
+    }
+
+    bool Graph::RemoveConnectionsTo(int ToId)
+    {
+        return 0 < std::erase_if(Connections,
+    [=](auto const & Connection){return Connection->GetToId() == ToId;});
     }
 
     bool Graph::GetIsDirectional() const

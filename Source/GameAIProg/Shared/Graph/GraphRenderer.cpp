@@ -2,38 +2,55 @@
 
 namespace GameAI
 {
-	GraphRenderer::GraphRenderer(UWorld* pWorld)
-	: World{ pWorld }
+	GraphRenderer::GraphRenderer(UWorld* world)
+	: World{world}
 	{
 	}
 
-	void GraphRenderer::SetRenderOptions(const GraphRenderOptions& NewOptions)
+	void GraphRenderer::SetRenderOptions(GraphRenderOptions const& NewOptions)
 	{
 		Options = NewOptions;
 	}
 
-	void GraphRenderer::RenderGraph(const Graph&  Graph) const
+	void GraphRenderer::SetHighlightedNodes(std::vector<std::pair<int, FColor>> const& NodesToHighlight)
 	{
-		if (Options.bDrawNodes)
-		{
-			for (auto & Node : Graph.GetNodes())
-			{
-				if (Node->GetId() != Graphs::InvalidNodeId)
-				{
-					// We skip invalid nodes
-					DrawNode(*Node);
-				}
-			}
-		}
+		HighlightedNodes.clear();
+		HighlightedNodes = NodesToHighlight;
+	}
 
-		if (Options.bDrawNodes)
+	void GraphRenderer::RenderGraph(Graph const &  Graph) const
+	{
+		// Draw connection
+		if (Options.bDrawConnections)
 		{
-			for (const auto& Connection : Graph.GetConnections())
+			for (auto& Connection : Graph.GetConnections())
 			{
 				DrawConnection(Graph, *Connection);
 			}
 		}
-
+		
+		for (auto & Node : Graph.GetNodes())
+		{
+			if (Node->GetId() != Graphs::InvalidNodeId) // We skip invalid nodes
+			{
+				if (auto FoundHighlight = std::ranges::find_if(HighlightedNodes, 
+					[&](std::pair<int, FColor> const& Highlight){ return Node->GetId() == Highlight.first; });
+					FoundHighlight != HighlightedNodes.end())
+				{
+					// If in highlights use the color override
+					if (Options.bDrawHighlightedNodes)
+					{
+						DrawNodeSphere(*Node, Graphs::DefaultNodeDrawRadius, FoundHighlight->second);
+					}
+				}
+					
+				if (Options.bDrawNodes)
+				{
+					DrawNode(*Node);
+				}
+			}
+		}
 	}
 }
+
 
