@@ -18,7 +18,7 @@ namespace ConversionHelpers
 			return false;
 		}
 		
-		return std::ranges::find(Vector, Value) == Vector.end();
+		return std::ranges::find(Vector, Value) != Vector.end();
 	}
 	
 	template <class T>
@@ -29,7 +29,7 @@ namespace ConversionHelpers
 			return false;
 		}
 		
-		return std::ranges::find(Vector, Value) == Vector.end();
+		return std::ranges::find(Vector, Value) != Vector.end();
 	}
 	
 }
