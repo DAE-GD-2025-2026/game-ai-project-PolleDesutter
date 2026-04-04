@@ -1,5 +1,6 @@
 #pragma once
 
+#include <list>
 #include <string_view>
 #include <vector>
 
@@ -9,6 +10,27 @@ namespace ConversionHelpers
 	
 	inline std::vector<std::string_view> SplitStringView(std::string_view StringView, const std::string_view Delimiter);
 	
+	template <class T>
+	bool Contains(std::vector<T> const& Vector, T const& Value) 
+	{ 
+		if (Vector.empty())
+		{
+			return false;
+		}
+		
+		return std::ranges::find(Vector, Value) == Vector.end();
+	}
+	
+	template <class T>
+	bool Contains(std::list<T> const& Vector, T const& Value) 
+	{ 
+		if (Vector.empty())
+		{
+			return false;
+		}
+		
+		return std::ranges::find(Vector, Value) == Vector.end();
+	}
 	
 }
 
