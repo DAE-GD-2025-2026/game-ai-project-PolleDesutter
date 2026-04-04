@@ -88,6 +88,21 @@ std::vector<Node*> BFS::FindPath(Node* const StartNode, Node* const DestinationN
 			const bool HasBeenVisited = ConversionHelpers::Contains(VisitedNodeIds, NeighborId);
 			if (HasBeenVisited)
 			{
+				// TODO: remove after debugging finished
+				UE_LOGFMT(LogTemp, Warning, "HasBeenVisited true, NeighborId({NeighborId}), ", NeighborId);		
+				FString ListText{};
+				for (const int VisitedNodeId : VisitedNodeIds)
+				{
+					if (!ListText.IsEmpty())
+					{
+						ListText += TEXT(", ");
+					}
+					
+					ListText += FString::FromInt(VisitedNodeId);
+				}
+				
+				UE_LOGFMT(LogTemp, Warning, "VisitedNodeId List: {VisitedNodeIds}", ListText);		
+				
 				continue;
 			}
 			
