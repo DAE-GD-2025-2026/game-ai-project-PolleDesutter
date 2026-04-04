@@ -43,29 +43,9 @@ std::vector<Node*> BFS::FindPath(Node* const StartNode, Node* const DestinationN
 	
 	// Start Algorithm
 	
-	// Get Neighbors
-	const auto& ToConnections = BfsGraph->FindConnectionsFrom(StartNode->GetId());
-	if (ToConnections.empty())
-	{
-		UE_LOG(LogTemp, Error, TEXT("BFS::FindPath: No connections found"));
-		return std::vector<Node*>();
-	}
+	std::queue<int> QueueNodeIds{};		// OpenList
 	
-	std::vector<int> NeighborIds(ToConnections.size(), IndexConstants::InvalidID);
-	for (int i = 0; i < ToConnections.size(); ++i)
-	{
-		if (!ToConnections[i])
-		{
-			continue;
-		}
-		
-		NeighborIds[i] = ToConnections[i]->GetToId();
-	}
-	
-	
-	std::queue<int> QueueNodeIds{};
-	
-	std::list<int> VisitedNodeIds{};
+	std::list<int> VisitedNodeIds{};	// ClosedList
 	std::map<int, int> ParentMap{};
 	
 	QueueNodeIds.push(StartNode->GetId());
@@ -83,13 +63,11 @@ std::vector<Node*> BFS::FindPath(Node* const StartNode, Node* const DestinationN
 			return ReconstructPath(ParentMap, StartNode, DestinationNode);
 		}
 		
-		for (int NeighborId : NeighborIds)
+		for (int NeighborId : GetNeighborsIds(CurrentNodeId))
 		{
 			const bool HasBeenVisited = ConversionHelpers::Contains(VisitedNodeIds, NeighborId);
 			if (HasBeenVisited)
 			{
-				// TODO: remove after debugging finished
-				UE_LOGFMT(LogTemp, Warning, "HasBeenVisited true, NeighborId({NeighborId}), ", NeighborId);		
 				FString ListText{};
 				for (const int VisitedNodeId : VisitedNodeIds)
 				{
@@ -101,7 +79,8 @@ std::vector<Node*> BFS::FindPath(Node* const StartNode, Node* const DestinationN
 					ListText += FString::FromInt(VisitedNodeId);
 				}
 				
-				UE_LOGFMT(LogTemp, Warning, "VisitedNodeId List: {VisitedNodeIds}", ListText);		
+				UE_LOGFMT(LogTemp, Verbose, "HasBeenVisited true, NeighborId({NeighborId}), ", NeighborId);		
+				UE_LOGFMT(LogTemp, Verbose, "VisitedNodeId List: {VisitedNodeIds}", ListText);		
 				
 				continue;
 			}
@@ -141,4 +120,33 @@ std::vector<Node*> BFS::ReconstructPath(const std::map<int, int>& ParentMap, Nod
 	std::ranges::reverse(Path);
 	
 	return Path;
+}
+
+std::vector<int> BFS::GetNeighborsIds(int NodeId) const
+{
+	if (NodeId == Graphs::InvalidNodeId)
+	{
+		UE_LOG(LogTemp, Error, TEXT("BFS::GetNeighborsIds: CurrentNode.Id is invalid"));
+		return std::vector<int>();
+	}
+	
+	const auto& ToConnections = BfsGraph->FindConnectionsFrom(NodeId);
+	if (ToConnections.empty())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("BFS::GetNeighborsIds: No connections found"));
+		return std::vector<int>();
+	}
+	
+	std::vector<int> NeighborIds(ToConnections.size(), Graphs::InvalidNodeId);
+	for (int i = 0; i < ToConnections.size(); ++i)
+	{
+		if (!ToConnections[i])
+		{
+			continue;
+		}
+		
+		NeighborIds[i] = ToConnections[i]->GetToId();
+	}
+	
+	return NeighborIds;	
 }

@@ -16,6 +16,7 @@ namespace GameAI
 
 	private:
 		std::vector<Node*> ReconstructPath(const std::map<int, int>& ParentMap, Node* const StartNode, Node* const GoalNode) const;
+		std::vector<int> GetNeighborsIds(int NodeId) const;
 		
 		
 		Graph* BfsGraph;
