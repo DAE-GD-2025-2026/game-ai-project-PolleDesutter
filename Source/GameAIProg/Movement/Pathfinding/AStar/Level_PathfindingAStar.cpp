@@ -106,13 +106,13 @@ void ALevel_PathfindingAStar::CalculatePath()
 		&& PathStartNodeId != PathEndNodeId)
 	{
 		//Select (uncomment) BFS Pathfinding or A* Pathfinding
-		BFS pathfinder = BFS(TerrainGraph);
+		BFS Pathfinder = BFS(TerrainGraph);
 		// AStar pathfinder = AStar(TerrainGraph, HeuristicFunction);
 		TerrainNode* const StartNode = TerrainGraph->GetNodeAs<TerrainNode>(PathStartNodeId);
 		TerrainNode* const EndNode = TerrainGraph->GetNodeAs<TerrainNode>(PathEndNodeId);
 
-		FoundPath = pathfinder.FindPath(StartNode, EndNode);
-		UE_LOG(LogTemp, Log, TEXT("New path calculated using %hs"), typeid(pathfinder).name());
+		FoundPath = Pathfinder.FindPath(StartNode, EndNode);
+		UE_LOG(LogTemp, Log, TEXT("New path calculated using %hs"), typeid(Pathfinder).name());
 		if (FoundPath.empty())
 		{
 			UE_LOG(LogTemp, Log, TEXT("New path is empty"));
