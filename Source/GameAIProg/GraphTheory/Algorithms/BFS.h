@@ -10,14 +10,14 @@ namespace GameAI
 	class BFS
 	{
 	public:
-		BFS(Graph* const pGraph);
+		BFS(Graph* const Graph);
 
-		std::vector<Node*> FindPath(Node* const pStartNode, Node* const pDestinationNode) const;
+		std::vector<Node*> FindPath(Node* const StartNode, Node* const DestinationNode) const;
 
 	private:
 		std::vector<Node*> ReconstructPath(const std::map<int, int>& ParentMap, Node* const StartNode, Node* const GoalNode) const;
 		
 		
-		Graph* pGraph;
+		Graph* BfsGraph;
 	};
 }

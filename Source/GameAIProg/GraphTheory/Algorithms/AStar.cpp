@@ -2,20 +2,21 @@
 
 using namespace GameAI;
 
-AStar::AStar(Graph* const pGraph, HeuristicFunctions::Heuristic hFunction)
-	: pGraph(pGraph)
-	, HeuristicFunction(hFunction)
+AStar::AStar(Graph* const Graph, HeuristicFunctions::Heuristic Function)
+	: AStarGraph(Graph)
+	, HeuristicFunction(Function)
 {
 }
 
-std::vector<Node*>AStar::FindPath(Node* const pStartNode, Node* const pGoalNode)
+std::vector<Node*>AStar::FindPath(Node* const StartNode, Node* const GoalNode)
 {
+	// TODO: Add algorithm
 	std::vector<Node*> path{};
 	return path;
 }
 
-float AStar::GetHeuristicCost(Node* const pStartNode, Node* const pEndNode) const
+float AStar::GetHeuristicCost(Node* const StartNode, Node* const EndNode) const
 {
-	FVector2D toDestination = pGraph->GetNode(pEndNode->GetId())->GetPosition() - pGraph->GetNode(pStartNode->GetId())->GetPosition();
-	return HeuristicFunction(abs(toDestination.X), abs(toDestination.Y));
+	const FVector2D ToDestination = AStarGraph->GetNode(EndNode->GetId())->GetPosition() - AStarGraph->GetNode(StartNode->GetId())->GetPosition();
+	return HeuristicFunction(abs(ToDestination.X), abs(ToDestination.Y));
 }

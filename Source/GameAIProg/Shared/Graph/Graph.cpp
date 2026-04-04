@@ -1,5 +1,4 @@
 #include "Graph.h"
-#include <ranges>
 
 namespace GameAI
 {
@@ -9,9 +8,9 @@ namespace GameAI
     {
     }
 
-    void Node::SetId(int id)
+    void Node::SetId(int NewId)
     {
-        Id = id;
+        Id = NewId;
     }
     int Node::GetId() const
     {
@@ -93,13 +92,13 @@ namespace GameAI
 #pragma endregion Connections
 
 #pragma region Graph
-    Graph::Graph(bool isDirectional)
-        : bIsDirectional{isDirectional}
+    Graph::Graph(bool bIsDirectional)
+        : bIsDirectional{ bIsDirectional }
     {
     }
 
     Graph::Graph(Graph const & Other)
-        : bIsDirectional{Other.bIsDirectional}
+        : bIsDirectional{ Other.bIsDirectional }
     {
         Nodes.reserve(Other.Nodes.size());
         for (std::unique_ptr<Node> const & OtherNode : Other.Nodes)

@@ -185,16 +185,17 @@ void ALevel_PathfindingAStar::UpdateImGui()
 		ImGui::Text("%.1f FPS", ImGui::GetIO().Framerate);
 		ImGui::Unindent();
 
-		/*Spacing*/ImGui::Spacing(); ImGui::Separator(); ImGui::Spacing(); ImGui::Spacing();
+		// Spacing
+		ImGui::Spacing(); ImGui::Separator(); ImGui::Spacing(); ImGui::Spacing();
 
 		ImGui::Text("A* Pathfinding");
 		ImGui::Spacing();
 		
 		// TODO conditional debug draws
-		// ImGui::Checkbox("Grid", &bDrawGrid);
-		// ImGui::Checkbox("NodeNumbers", &bDrawNodeNumbers);
-		// ImGui::Checkbox("Connections", &bDrawConnections);
-		// ImGui::Checkbox("Connections Costs", &bDrawConnectionsCosts);
+		ImGui::Checkbox("Grid", &bDrawGrid);
+		ImGui::Checkbox("NodeNumbers", &bDrawNodeNumbers);
+		ImGui::Checkbox("Connections", &bDrawConnections);
+		ImGui::Checkbox("Connections Costs", &bDrawConnectionsCosts);
 		if (ImGui::Combo("", &SelectedHeuristic, "Manhattan\0Euclidean\0SqEuclidean\0Octile\0Chebyshev", 4))
 		{
 			switch (SelectedHeuristic)

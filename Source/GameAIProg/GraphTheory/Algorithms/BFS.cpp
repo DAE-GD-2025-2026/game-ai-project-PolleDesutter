@@ -10,31 +10,31 @@
 
 using namespace GameAI;
 
-BFS::BFS(Graph* const pGraph)
-	: pGraph(pGraph)
+BFS::BFS(Graph* const Graph)
+	: BfsGraph{ Graph }
 {
 }
 
 // TODO Breath First Search Algorithm searches for a path from the startNode to the destinationNode
-std::vector<Node*> BFS::FindPath(Node* const pStartNode, Node* const pDestinationNode) const
+std::vector<Node*> BFS::FindPath(Node* const StartNode, Node* const DestinationNode) const
 {
-	if (!pStartNode)
+	if (!StartNode)
 	{
 		UE_LOG(LogTemp, Error, TEXT("StartNode is invalid"));
 		return std::vector<Node*>();
 	}
-	if (!pDestinationNode)
+	if (!DestinationNode)
 	{
 		UE_LOG(LogTemp, Error, TEXT("DestinationNode is invalid"));
 		return std::vector<Node*>();
 	}
 	
-	if (pStartNode->GetId() == Graphs::InvalidNodeId)
+	if (StartNode->GetId() == Graphs::InvalidNodeId)
 	{
 		UE_LOG(LogTemp, Error, TEXT("StartNode Id is invalid"));
 		return std::vector<Node*>();
 	}
-	if (pDestinationNode->GetId() == Graphs::InvalidNodeId)
+	if (DestinationNode->GetId() == Graphs::InvalidNodeId)
 	{
 		UE_LOG(LogTemp, Error, TEXT("DestinationNode Id is invalid"));
 		return std::vector<Node*>();
@@ -44,7 +44,7 @@ std::vector<Node*> BFS::FindPath(Node* const pStartNode, Node* const pDestinatio
 	// Start Algorithm
 	
 	// Get Neighbors
-	const auto& ToConnections = pGraph->FindConnectionsFrom(pStartNode->GetId());
+	const auto& ToConnections = BfsGraph->FindConnectionsFrom(StartNode->GetId());
 	if (ToConnections.empty())
 	{
 		UE_LOG(LogTemp, Error, TEXT("BFS::FindPath: No connections found"));
@@ -68,8 +68,8 @@ std::vector<Node*> BFS::FindPath(Node* const pStartNode, Node* const pDestinatio
 	std::list<int> VisitedNodeIds{};
 	std::map<int, int> ParentMap{};
 	
-	QueueNodeIds.push(pStartNode->GetId());
-	VisitedNodeIds.push_back(pStartNode->GetId());
+	QueueNodeIds.push(StartNode->GetId());
+	VisitedNodeIds.push_back(StartNode->GetId());
 	
 	int CurrentNodeId = Graphs::InvalidNodeId;
 	
@@ -78,9 +78,9 @@ std::vector<Node*> BFS::FindPath(Node* const pStartNode, Node* const pDestinatio
 		CurrentNodeId = QueueNodeIds.front();
 		QueueNodeIds.pop();
 		
-		if (CurrentNodeId == pDestinationNode->GetId())
+		if (CurrentNodeId == DestinationNode->GetId())
 		{
-			return ReconstructPath(ParentMap, pStartNode, pDestinationNode);
+			return ReconstructPath(ParentMap, StartNode, DestinationNode);
 		}
 		
 		for (int NeighborId : NeighborIds)
@@ -118,7 +118,7 @@ std::vector<Node*> BFS::ReconstructPath(const std::map<int, int>& ParentMap, Nod
 			return std::vector<Node*>();
 		}
 		
-		CurrentNode = pGraph->GetNode(CurrentNodeId).get(); 
+		CurrentNode = BfsGraph->GetNode(CurrentNodeId).get(); 
 	}
 	
 	// Add startNode & reserve vector

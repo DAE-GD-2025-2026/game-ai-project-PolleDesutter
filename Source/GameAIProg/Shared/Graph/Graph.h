@@ -83,7 +83,7 @@ namespace GameAI
     class Graph
     {
     public:
-        explicit Graph(bool isDirectional = false);
+        explicit Graph(bool bIsDirectional = false);
         explicit Graph(Graph const & Other);
 
         // --- Nodes --------------------------------------------------------

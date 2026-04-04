@@ -46,21 +46,21 @@ protected:
 
 private:
 	UPROPERTY()
-	ASteeringAgent* Agent{nullptr}; // ref
+	ASteeringAgent* Agent{}; // ref
 	PathFollow PathFollow{};
 	
-	GameAI::TerrainGridGraph* TerrainGraph{nullptr};
-	GameAI::GraphRenderer* Renderer{nullptr};
-	GameAI::TerrainNodeFactory* NodeFactory{nullptr};
+	GameAI::TerrainGridGraph* TerrainGraph{};
+	GameAI::GraphRenderer* Renderer{};
+	GameAI::TerrainNodeFactory* NodeFactory{};
 	
-	int PathStartNodeId{44};
-	int PathEndNodeId{88};
-	int SelectedHeuristic = 4;
+	int PathStartNodeId{ 44 };
+	int PathEndNodeId{ 88 };
+	int SelectedHeuristic{ 4 };
 	GameAI::HeuristicFunctions::Heuristic HeuristicFunction = GameAI::HeuristicFunctions::Chebyshev;
 	std::vector<GameAI::Node*> FoundPath{};
 
 	void CalculatePath();
-	void UpdateAgentPath(std::vector<GameAI::Node*> const & Path);
+	void UpdateAgentPath(std::vector<GameAI::Node*> const& Path);
 	
 	void UpdateImGui();
 	

@@ -5,34 +5,34 @@ namespace GameAI::HeuristicFunctions
 	// Common typedef
 	typedef float(*Heuristic)(float, float);
 	
-	//Manhattan distance
-	static float Manhattan(float x, float y)
+	// Manhattan distance
+	static float Manhattan(float X, float Y)
 	{
-		return x + y;
+		return X + Y;
 	}
 
-	//Euclidean distance
-	static float Euclidean(float x, float y)
+	// Euclidean distance
+	static float Euclidean(float X, float Y)
 	{
-		return sqrtf(x * x + y * y);
+		return sqrtf(X * X + Y * Y);
 	}
 
-	//Sqrt Euclidean distance
-	static float SqEuclidean(float x, float y)
+	// Sqrt Euclidean distance
+	static float SqEuclidean(float X, float Y)
 	{
-		return x * x + y * y;
+		return X * X + Y * Y;
 	}
 
-	//Octile distance
-	static float Octile(float x, float y)
+	// Octile distance
+	static float Octile(float X, float Y)
 	{
 		float constexpr f = 0.414213562373095048801f; // == sqrt(2) - 1;
-		return x < y ? f * x + y : f * y + x;
+		return X < Y ? f * X + Y : f * Y + X;
 	}
 
-	//Chebyshev distance
-	static float Chebyshev(float x, float y)
+	// Chebyshev distance
+	static float Chebyshev(float X, float Y)
 	{
-		return std::max(x, y);
+		return std::max(X, Y);
 	}
 };
