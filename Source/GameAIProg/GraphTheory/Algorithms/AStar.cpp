@@ -1,6 +1,4 @@
-﻿#define UE_DISABLE_OPTIMIZATION
-// TODO: remove this line after debugging
-#include "AStar.h"
+﻿#include "AStar.h"
 
 #include <list>
 #include <queue>
@@ -40,8 +38,9 @@ std::vector<Node*>AStar::FindPath(Node* const StartNode, Node* const GoalNode) c
 	}
 	
 	
+	// std::vector<NodeRecord> ToBeCheckedNodeRecords{};
 	std::list<NodeRecord> ToBeCheckedNodeRecords{};
-	std::list<NodeRecord> CheckedNodeRecords{};
+	std::vector<NodeRecord> CheckedNodeRecords{};
 	NodeRecord CurrentNodeRecord{};
 	
 	const NodeRecord StartRecord
@@ -51,31 +50,27 @@ std::vector<Node*>AStar::FindPath(Node* const StartNode, Node* const GoalNode) c
 		.CostSoFar = 0.0f,
 		.EstimatedTotalCost = 0.0f + GetHeuristicCost(StartNode, GoalNode),
 	};
-	CurrentNodeRecord = StartRecord;
 	ToBeCheckedNodeRecords.push_back(StartRecord);
 	
 	while (!ToBeCheckedNodeRecords.empty())
 	{
 		// std::ranges::min_element doesn't work due to NodeRecord not having
 		// std::ranges::less implemented
-		CurrentNodeRecord = *std::min_element(ToBeCheckedNodeRecords.begin(), ToBeCheckedNodeRecords.end());
+		auto CurrentNodeRecordIt = std::min_element(ToBeCheckedNodeRecords.begin(), ToBeCheckedNodeRecords.end());
+		CurrentNodeRecord = *CurrentNodeRecordIt;
 		
 		// if CurrentNode is Goal, then exit while loop
 		if (CurrentNodeRecord.CurrentNode == GoalNode)
 		{
-			CheckedNodeRecords.push_back(CurrentNodeRecord);
 			break;
 		}
 		
-		// TODO: replace the previously used FindConnectionsTo to FindConnectionsWith, in previously used examples
-		
-		// for (Connection* CurrentConnection : AStarGraph->FindConnectionsWith(CurrentNodeRecord.CurrentNode->GetId()))
 		for (Connection* CurrentConnection : AStarGraph->FindConnectionsFrom(CurrentNodeRecord.CurrentNode->GetId()))
 		{
 			// Aka neighbor node
 			Node* const NextNode = AStarGraph->GetNode(CurrentConnection->GetToId()).get();
 			
-			const float CurrentGCost = CurrentNodeRecord.CostSoFar + GetHeuristicCost(CurrentNodeRecord.CurrentNode, NextNode);
+			const float CurrentGCost = CurrentNodeRecord.CostSoFar + CurrentConnection->GetWeight();
 			
 			// Check if NextNode has already been checked
 			const auto FoundCheckedRecordIt = std::ranges::find_if(CheckedNodeRecords, 
@@ -96,7 +91,7 @@ std::vector<Node*>AStar::FindPath(Node* const StartNode, Node* const GoalNode) c
 				UE_LOG(LogTemp, Warning, TEXT("NodeInToBeCheckedRecords"));
 				// if an already existing connection to the same node is cheaper, skip this node
 				// else, remove the existing connection, since it's bad
-				if (CurrentGCost < FoundCheckedRecordIt->CostSoFar)
+				if (FoundCheckedRecordIt->CostSoFar < CurrentGCost)
 				{
 					continue;
 				}
@@ -122,8 +117,7 @@ std::vector<Node*>AStar::FindPath(Node* const StartNode, Node* const GoalNode) c
 			const bool bIsNodeInToBeCheckedRecords = (FoundToBeCheckedRecordIt != ToBeCheckedNodeRecords.end()); 
 			if (bIsNodeInToBeCheckedRecords)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("NodeInToBeCheckedRecords"));
-				if (CurrentGCost < FoundToBeCheckedRecordIt->CostSoFar)
+				if (FoundToBeCheckedRecordIt->CostSoFar < CurrentGCost)
 				{
 					continue;
 				}
@@ -144,7 +138,13 @@ std::vector<Node*>AStar::FindPath(Node* const StartNode, Node* const GoalNode) c
 			ToBeCheckedNodeRecords.push_back(ConnectionRecord);
 		}
 		
-		ToBeCheckedNodeRecords.remove(CurrentNodeRecord);
+		if (CurrentNodeRecordIt == ToBeCheckedNodeRecords.end())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("CurrentNodeRecordIt is invalid"));
+			break;	
+		}
+		
+		ToBeCheckedNodeRecords.erase(CurrentNodeRecordIt);
 		CheckedNodeRecords.push_back(CurrentNodeRecord);
 	}
 	
@@ -154,20 +154,6 @@ std::vector<Node*>AStar::FindPath(Node* const StartNode, Node* const GoalNode) c
 		return std::vector<Node*>();
 	}
 	
-			// todo: remove after find bug 
-			FString ListText{};
-			for (const NodeRecord& VisitedNodeId : CheckedNodeRecords)
-			{
-				if (!ListText.IsEmpty())
-				{
-					ListText += TEXT(", ");
-				}
-				
-				ListText += FString::FromInt(VisitedNodeId.CurrentNode->GetId());
-			}
-			UE_LOG(LogTemp, Warning, TEXT("CheckedNodeRecords:"));
-			UE_LOGFMT(LogTemp, Warning, "{VisitedNodeIds}", ListText);		
-				
 	
 	// Backtracking
 	std::vector<Node*> Path{};
@@ -181,11 +167,8 @@ std::vector<Node*>AStar::FindPath(Node* const StartNode, Node* const GoalNode) c
 		}
 		
 		Path.push_back(CurrentNodeRecord.CurrentNode);
+		
 		const int PreviousNodeId = CurrentNodeRecord.CurrentConnection->GetFromId();
-			UE_LOGFMT(LogTemp, Warning, "CurrentNode Id is {Id}", CurrentNodeRecord.CurrentNode->GetId());
-			UE_LOGFMT(LogTemp, Warning, "PreviousNodeId is {Id}", PreviousNodeId);
-		
-		
 		const auto PreviousNodeRecordIt = std::ranges::find_if(CheckedNodeRecords,
 			[PreviousNodeId](const NodeRecord& CheckedNodeRecord)
 			{
@@ -200,9 +183,8 @@ std::vector<Node*>AStar::FindPath(Node* const StartNode, Node* const GoalNode) c
 		const bool bHasFoundPreviousRecord = (PreviousNodeRecordIt != CheckedNodeRecords.end());
 		if (!bHasFoundPreviousRecord)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("PreviousNodeRecordIt is nullptr, Ahhhh"));
-			// return std::vector<Node*>{};
-			break;
+			UE_LOG(LogTemp, Warning, TEXT("PreviousNodeRecordIt is nullptr"));
+			return std::vector<Node*>{};
 		}
 		
 		CurrentNodeRecord = *PreviousNodeRecordIt;
