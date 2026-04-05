@@ -17,6 +17,7 @@ public:
 	//https://gamedev.stackexchange.com/questions/68302/how-does-the-simple-stupid-funnel-algorithm-work
 	static std::vector<NavLine> FindPortals(std::vector<Node*> const & Path, TriPolygon const & NavPoly)
 	{
+		// TODO: implement
 		//Container
 		std::vector<NavLine> Portals = {};
 		
@@ -34,6 +35,7 @@ public:
 	static std::vector<FVector2D> OptimizePortals( std::vector<NavLine> const & Portals, TriPolygon const & NavPoly)
 	{
 		std::vector<FVector2D> Path{};
+		// TODO: implement
 		//P1 == right point of portal, P2 == left point of portal
 		
 			//--- RIGHT CHECK ---
