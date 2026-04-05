@@ -95,6 +95,15 @@ void ALevel_PathfindingAStar::Tick(float DeltaTime)
 	TerrainGraph->DebugDrawCells(GetWorld());
 	TerrainGraph->DrawTerrain(GetWorld());
 	// TODO implement conditional debug draws
+	if (bDrawNodeNumbers)
+	{
+		for (const auto& uNode : TerrainGraph->GetNodes())
+		{
+			FString IdText = FString::FromInt(uNode->GetId());
+			DrawDebugString(GetWorld(), FVector(uNode->GetPosition(), 0), IdText);
+		}
+		
+	}
 }
 
 void ALevel_PathfindingAStar::CalculatePath()
@@ -106,8 +115,8 @@ void ALevel_PathfindingAStar::CalculatePath()
 		&& PathStartNodeId != PathEndNodeId)
 	{
 		//Select (uncomment) BFS Pathfinding or A* Pathfinding
-		BFS Pathfinder = BFS(TerrainGraph);
-		// AStar pathfinder = AStar(TerrainGraph, HeuristicFunction);
+		// BFS Pathfinder = BFS(TerrainGraph);
+		AStar Pathfinder = AStar(TerrainGraph, HeuristicFunction);
 		TerrainNode* const StartNode = TerrainGraph->GetNodeAs<TerrainNode>(PathStartNodeId);
 		TerrainNode* const EndNode = TerrainGraph->GetNodeAs<TerrainNode>(PathEndNodeId);
 
