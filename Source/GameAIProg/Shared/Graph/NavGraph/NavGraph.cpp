@@ -34,11 +34,11 @@ int GameAI::NavGraph::GetNodeIdFromEdgeIndex(int EdgeIdx) const
 {
 	if (EdgeIdx >= 0)
 	{
-		for (auto const & pNode : Nodes)
+		for (const auto& uNode : Nodes)
 		{
-			if (reinterpret_cast<NavGraphNode*>(pNode.get())->GetEdgeIdx() == EdgeIdx)
+			if (reinterpret_cast<NavGraphNode*>(uNode.get())->GetEdgeIdx() == EdgeIdx)
 			{
-				return pNode->GetId();
+				return uNode->GetId();
 			}
 		}
 	}
@@ -48,6 +48,7 @@ int GameAI::NavGraph::GetNodeIdFromEdgeIndex(int EdgeIdx) const
 
 void GameAI::NavGraph::CreateNavigationGraph()
 {
+	// TODO: implement
 	//1. Go over all the edges of the navigation mesh and create nodes
 			// Create node here
 

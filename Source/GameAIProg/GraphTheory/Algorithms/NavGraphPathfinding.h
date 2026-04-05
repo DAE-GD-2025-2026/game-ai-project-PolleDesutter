@@ -7,14 +7,15 @@ namespace GameAI
 
 	struct NavLine
 	{
-		FVector2D P1, P2;	
+		FVector2D P1;
+		FVector2D P2;	
 	};
 
 	class NavMeshPathfinding
 	{
 	public:
-		static std::vector<FVector2D> FindPath(const FVector2D& startPos, const FVector2D& endPos, NavGraph* const pNavGraph,
-			std::vector<FVector2D>& debugNodePositions, std::vector<NavLine>& debugPortals);
-		static std::vector<FVector2D> FindPath(const FVector2D& startPos, const FVector2D& endPos, NavGraph* const pNavGraph);
+		static std::vector<FVector2D> FindPath(const FVector2D& StartPos, const FVector2D& EndPos, NavGraph* const NavigationGraph,
+			std::vector<FVector2D>& DebugNodePositions, std::vector<NavLine>& DebugPortals);
+		static std::vector<FVector2D> FindPath(const FVector2D& StartPos, const FVector2D& EndPos, NavGraph* const NavigationGraph);
 	};
 }

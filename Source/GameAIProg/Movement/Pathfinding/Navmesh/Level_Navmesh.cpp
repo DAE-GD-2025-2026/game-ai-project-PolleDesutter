@@ -98,10 +98,10 @@ void ALevel_Navmesh::Tick(float DeltaTime)
 	}
 	
 	// Todo: Draw the portals travelled through with SSFA
-	// if (bDrawPortals)
-	// {
-	// 	
-	// }
+	if (bDrawPortals)
+	{
+		
+	}
 	
 	UpdateImGui();
 }
@@ -163,10 +163,10 @@ TArray<TArray<FVector>> ALevel_Navmesh::ExtractNavMeshTris() const
 	if (dtNavMesh const * NavMesh = Cast<ARecastNavMesh>(NavData)->GetRecastMesh())
 	{
 		// Loop over all MeshTiles
-		for (int TileIdx{0}; TileIdx < NavMesh->getMaxTiles(); ++TileIdx)
+		for (int TileIdx = 0; TileIdx < NavMesh->getMaxTiles(); ++TileIdx)
 		{
 			// check if tile is valid
-			dtMeshTile const * Tile{NavMesh->getTile(TileIdx)};
+			dtMeshTile const * Tile{ NavMesh->getTile(TileIdx) };
 			if (!Tile || !Tile->header || !Tile->polys) continue;
 			
 			for (int i = 0; i < Tile->header->detailMeshCount; ++i)
@@ -174,30 +174,30 @@ TArray<TArray<FVector>> ALevel_Navmesh::ExtractNavMeshTris() const
 				const dtPolyDetail* DetailMesh = &Tile->detailMeshes[i];
 				const dtPoly* Poly = &Tile->polys[i];  // Corresponding base polygon
 				
-				for (int triIdx = 0; triIdx < DetailMesh->triCount; ++triIdx)
+				for (int TriIdx = 0; TriIdx < DetailMesh->triCount; ++TriIdx)
 				{
 					// Each detail triangle is stored as 4 bytes:
 					// - 3 bytes: indices into either poly->verts or detailVerts
 					// - 1 byte : flags (ignored)
-					const unsigned char* TriData = &Tile->detailTris[(DetailMesh->triBase + triIdx) * 4];
+					const unsigned char* TriData = &Tile->detailTris[(DetailMesh->triBase + TriIdx) * 4];
 
 					// For each of the three triangle corners
 					TArray<FVector> TriVerts{};
-					for (int corner = 0; corner < 3; ++corner)
+					for (int Corner = 0; Corner < 3; ++Corner)
 					{
-						unsigned char idx = TriData[corner];
+						const unsigned char Idx = TriData[Corner];
 						const double* Vert;
 
-						if (idx < Poly->vertCount)
+						if (Idx < Poly->vertCount)
 						{
 							// Index into the base polygon's vertices
-							Vert = &Tile->verts[Poly->verts[idx] * 3];
+							Vert = &Tile->verts[Poly->verts[Idx] * 3];
 						}
 						else
 						{
 							// Index into the detail vertices (height‑field detail)
-							int detailVertIdx = DetailMesh->vertBase + (idx - Poly->vertCount);
-							Vert = &Tile->detailVerts[detailVertIdx * 3];
+							const int DetailVertIdx = DetailMesh->vertBase + (Idx - Poly->vertCount);
+							Vert = &Tile->detailVerts[DetailVertIdx * 3];
 						}
 
 						// Convert to Unreal coordinates and add to output array
@@ -215,8 +215,8 @@ TArray<TArray<FVector>> ALevel_Navmesh::ExtractNavMeshTris() const
 void ALevel_Navmesh::SetTarget()
 {
 	GameAI::NavMeshPathfinding Pathfinder{};
-	std::vector<FVector2D> Path =  Pathfinder.FindPath(Agent->GetPosition(), 
-	FVector2D{LatestMouseWorldPos}, NavigationGraph.get());
+	std::vector<FVector2D> Path = Pathfinder.FindPath(Agent->GetPosition(), 
+	FVector2D{ LatestMouseWorldPos }, NavigationGraph.get());
 
 	DebugDrawPath = Path;
 	

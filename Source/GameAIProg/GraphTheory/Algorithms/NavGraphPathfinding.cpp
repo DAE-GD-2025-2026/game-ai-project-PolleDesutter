@@ -8,37 +8,38 @@
 
 using namespace GameAI;
 
-std::vector<FVector2D> NavMeshPathfinding::FindPath(const FVector2D& startPos, const FVector2D& endPos,
-	NavGraph* const pNavGraph, std::vector<FVector2D>& debugNodePositions, std::vector<NavLine>& debugPortals) 
+std::vector<FVector2D> NavMeshPathfinding::FindPath(const FVector2D& StartPos, const FVector2D& EndPos,
+	NavGraph* const NavigationGraph, std::vector<FVector2D>& DebugNodePositions, std::vector<NavLine>& DebugPortals) 
 {
-	//Create the path to return
-	std::vector<FVector2D> finalPath{};
+	// TODO: implement
+	// Create the path to return
+	std::vector<FVector2D> FinalPath{};
 
-	//Get the start and endTriangle
+	// Get the start and endTriangle
 
-	//We have valid start/end triangles and they are not the same
-	//=> Start looking for a path
-	//Copy the graph
+	// We have valid start/end triangles, and they are not the same
+	// => Start looking for a path
+	// Copy the graph
 
-	//Create Extra node for the Start Node (Agent's position
+	// Create Extra node for the Start Node (Agent's position
 
-	//Create extra node for the endNode
+	// Create extra node for the endNode
 
-	//Run A star on new graph
+	// Run A star on new graph
 
-	//Debug Visualisation
+	// Debug Visualisation
 
-	// Extra: Run optimiser on new graph (First check if everything works without SSFA!)
+	// Extra: Run optimizer on new graph (First check if everything works without SSFA!)
 	// debugPortals = SSFA::FindPortals(nodes, *pNavGraph->GetNavPolygon());
 	// finalPath = SSFA::OptimizePortals(debugPortals, *pNavGraph->GetNavPolygon());
 	
-	return finalPath;
+	return FinalPath;
 }
 
-std::vector<FVector2D> NavMeshPathfinding::FindPath(const FVector2D& startPos, const FVector2D& endPos, NavGraph* const pNavGraph)
+std::vector<FVector2D> NavMeshPathfinding::FindPath(const FVector2D& StartPos, const FVector2D& EndPos, NavGraph* const NavigationGraph)
 {
-	std::vector<FVector2D> debugNodePositions{};
-	std::vector<NavLine> debugPortals{};
+	std::vector<FVector2D> DebugNodePositions{};
+	std::vector<NavLine> DebugPortals{};
 
-	return FindPath(startPos, endPos, pNavGraph, debugNodePositions, debugPortals);
+	return FindPath(StartPos, EndPos, NavigationGraph, DebugNodePositions, DebugPortals);
 }

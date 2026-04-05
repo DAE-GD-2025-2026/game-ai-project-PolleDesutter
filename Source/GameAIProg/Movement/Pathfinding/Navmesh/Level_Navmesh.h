@@ -33,15 +33,15 @@ private:
 	std::unique_ptr<GameAI::GraphRenderer> Renderer;
 	
 	UPROPERTY()
-	ASteeringAgent* Agent{nullptr}; // ref
+	ASteeringAgent* Agent{}; // ref
 	PathFollow PathFollow{};
 	std::vector<FVector2D> DebugDrawPath{};
 	
-	bool bDrawNavPolyVertices{false};
-	bool bDrawNavPoly{true};
-	bool bDrawNavGraph{true};
-	bool bDrawPath{true};
-	bool bDrawPortals{false};
+	bool bDrawNavPolyVertices{ false };
+	bool bDrawNavPoly{ true };
+	bool bDrawNavGraph{ true };
+	bool bDrawPath{ true };
+	bool bDrawPortals{ false };
 	
 	void UpdateImGui();
 	
