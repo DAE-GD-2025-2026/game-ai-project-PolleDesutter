@@ -12,7 +12,7 @@ namespace GameAI
 		
 		std::unique_ptr<NavGraph> Clone() const;
 		
-		TriPolygon const * GetNavPolygon() const {return pNavPoly.get();}
+		TriPolygon const* GetNavPolygon() const { return pNavPoly.get(); }
 		int GetNodeIdFromEdgeIndex(int EdgeIdx) const;
 		
 	private:

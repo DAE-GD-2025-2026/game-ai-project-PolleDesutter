@@ -48,13 +48,69 @@ int GameAI::NavGraph::GetNodeIdFromEdgeIndex(int EdgeIdx) const
 
 void GameAI::NavGraph::CreateNavigationGraph()
 {
-	// TODO: implement
-	//1. Go over all the edges of the navigation mesh and create nodes
-			// Create node here
-
-	//2. Create connections now that every node is created	
-		//2 valid nodes -> 1 connection
-		//3 valid nodes -> 3 connections
+	
+	// Going over all the edges of the navigation mesh and create nodes
+	int EdgeLoopIdx{};
+	for (const TriPolygon::Edge& CurrentEdge : pNavPoly->GetEdges())
+	{
+		// Creating node here
+		const FVector EdgeP1 = CurrentEdge.GetP1(*pNavPoly);
+		const FVector EdgeP2 = CurrentEdge.GetP2(*pNavPoly);
+		const FVector MiddleEdgePos = (EdgeP1 + EdgeP2) / 2.f;
 		
-	//3. Set the connections cost to the actual distance
+		auto UniqueNavNode = std::make_unique<NavGraphNode>(FVector2D(MiddleEdgePos), EdgeLoopIdx);
+		AddNode(std::move(UniqueNavNode));
+		
+		++EdgeLoopIdx;	
+	}
+
+	// Creating connections now that every node is created	
+	for (const TriPolygon::Triangle& Triangle : pNavPoly->GetTriangles())
+	{
+		std::vector<int> NodeIds{};
+		
+		for (const TriPolygon::Edge& Edge : Triangle.GetEdges())
+		{
+			std::optional<int> EdgeIdxOptional = pNavPoly->FindEdgeIndex(Edge);
+			if (EdgeIdxOptional.has_value())
+			{
+				const int EdgeIdx = EdgeIdxOptional.value();
+				if (EdgeIdx == Graphs::InvalidNodeId)
+				{
+					continue;
+				}
+				
+				const int NodeIdx = GetNodeIdFromEdgeIndex(EdgeIdx);
+				if (NodeIdx == Graphs::InvalidNodeId)
+				{
+					continue;
+				}
+				
+				NodeIds.push_back(NodeIdx);
+			}
+		}
+		
+		// 2 valid nodes -> 1 connection
+		// 3 valid nodes -> 3 connections
+		if (NodeIds.size() == 2)
+		{
+			auto NodeConnection = std::make_unique<Connection>(NodeIds[0], NodeIds[1]);
+			AddConnection(std::move(NodeConnection));
+		}
+		else if (NodeIds.size() == 3)
+		{
+			auto NodeConnection = std::make_unique<Connection>(NodeIds[0], NodeIds[1]);
+			AddConnection(std::move(NodeConnection));
+			
+			NodeConnection = std::make_unique<Connection>(NodeIds[1], NodeIds[2]);
+			AddConnection(std::move(NodeConnection));
+			
+			NodeConnection = std::make_unique<Connection>(NodeIds[2], NodeIds[0]);
+			AddConnection(std::move(NodeConnection));
+		}
+	}
+		
+	// Setting the connections cost to the actual distance
+	SetConnectionCostsToDistances();
+	
 }
