@@ -23,7 +23,7 @@ namespace GameAI
         explicit Node(FVector2D const& Position);
         virtual ~Node() = default;
         
-        void SetId(int id);
+        void SetId(int NewId);
         int GetId() const;
 
         FVector2D const& GetPosition() const;

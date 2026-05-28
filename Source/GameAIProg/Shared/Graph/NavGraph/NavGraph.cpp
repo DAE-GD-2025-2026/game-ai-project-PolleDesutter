@@ -32,14 +32,17 @@ std::unique_ptr<GameAI::NavGraph> GameAI::NavGraph::Clone() const
 
 int GameAI::NavGraph::GetNodeIdFromEdgeIndex(int EdgeIdx) const
 {
-	if (EdgeIdx >= 0)
+	if (EdgeIdx < 0)
 	{
-		for (const auto& uNode : Nodes)
+		return Graphs::InvalidNodeId;
+	}
+	
+	for (const auto& Node : Nodes)
+	{
+		const auto NavNode = reinterpret_cast<NavGraphNode*>(Node.get());
+		if (NavNode->GetEdgeIdx() == EdgeIdx)
 		{
-			if (reinterpret_cast<NavGraphNode*>(uNode.get())->GetEdgeIdx() == EdgeIdx)
-			{
-				return uNode->GetId();
-			}
+			return Node->GetId();
 		}
 	}
 	
