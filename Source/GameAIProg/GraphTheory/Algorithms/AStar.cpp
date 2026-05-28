@@ -38,7 +38,6 @@ std::vector<Node*>AStar::FindPath(Node* const StartNode, Node* const GoalNode) c
 	}
 	
 	
-	// std::vector<NodeRecord> ToBeCheckedNodeRecords{};
 	std::list<NodeRecord> ToBeCheckedNodeRecords{};
 	std::vector<NodeRecord> CheckedNodeRecords{};
 	NodeRecord CurrentNodeRecord{};
