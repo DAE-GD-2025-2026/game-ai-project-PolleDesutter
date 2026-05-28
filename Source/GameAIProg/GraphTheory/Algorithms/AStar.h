@@ -1,7 +1,9 @@
 ﻿#pragma once
 
 #include <vector>
+
 #include "Shared/Graph/Graph.h"
+
 #include "Heuristics.h"
 
 namespace GameAI
@@ -33,10 +35,10 @@ namespace GameAI
 			};
 		};
 
-		std::vector<Node*> FindPath(Node* const StartNode, Node* const DestinationNode) const;
+		std::vector<Node*> FindPath(Node* const StartNode, const Node* const DestinationNode) const;
 
 	private:
-		float GetHeuristicCost(Node* const StartNode, Node* const EndNode) const;
+		float GetHeuristicCost(const Node* const StartNode, const Node* const EndNode) const;
 
 		Graph* AStarGraph;
 		HeuristicFunctions::Heuristic HeuristicFunction;

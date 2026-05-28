@@ -5,13 +5,14 @@
 
 using namespace GameAI;
 
-AStar::AStar(Graph* const Graph, HeuristicFunctions::Heuristic Function)
+
+AStar::AStar(Graph* const Graph, const HeuristicFunctions::Heuristic Function)
 	: AStarGraph(Graph)
 	, HeuristicFunction(Function)
 {
 }
 
-std::vector<Node*>AStar::FindPath(Node* const StartNode, Node* const GoalNode) const
+std::vector<Node*>AStar::FindPath(Node* const StartNode, const Node* const GoalNode) const
 {
 	if (StartNode->GetId() == Graphs::InvalidNodeId)
 	{
@@ -39,7 +40,7 @@ std::vector<Node*>AStar::FindPath(Node* const StartNode, Node* const GoalNode) c
 	
 	
 	std::list<NodeRecord> ToBeCheckedNodeRecords{};
-	std::vector<NodeRecord> CheckedNodeRecords{};
+	std::list<NodeRecord> CheckedNodeRecords{};
 	NodeRecord CurrentNodeRecord{};
 	
 	const NodeRecord StartRecord
@@ -73,58 +74,43 @@ std::vector<Node*>AStar::FindPath(Node* const StartNode, Node* const GoalNode) c
 			
 			// Check if NextNode has already been checked
 			const auto FoundCheckedRecordIt = std::ranges::find_if(CheckedNodeRecords, 
-				[NextNode](const NodeRecord& CheckedNodeRecord)
+				[&NextNode](const NodeRecord& CheckedNodeRecord)
 				{
-					if (CheckedNodeRecord.CurrentNode == NextNode)
-					{
-						return true;
-					}
-					
-					return false;	
+					return CheckedNodeRecord.CurrentNode == NextNode;
 				});
 			
-			const bool bHasNodeAlreadyBeenChecked = (FoundCheckedRecordIt != CheckedNodeRecords.end()); 
+			const bool bHasNodeAlreadyBeenChecked = FoundCheckedRecordIt != CheckedNodeRecords.end(); 
 			if (bHasNodeAlreadyBeenChecked)
 			{
-				
 				UE_LOG(LogTemp, Warning, TEXT("NodeInToBeCheckedRecords"));
-				// if an already existing connection to the same node is cheaper, skip this node
-				// else, remove the existing connection, since it's bad
-				if (FoundCheckedRecordIt->CostSoFar < CurrentGCost)
+					
+				// If the node is already checked and the checked version's cost is same or cheaper, skip this node
+				if (FoundCheckedRecordIt->CostSoFar <= CurrentGCost)
 				{
 					continue;
 				}
-				else
-				{
-					CheckedNodeRecords.erase(FoundCheckedRecordIt);	
-				}
+				
+				CheckedNodeRecords.remove(*FoundCheckedRecordIt);	
 			}
-			
-			
+				
 			// Check if NextNode is in the ToBeCheck list
 			const auto FoundToBeCheckedRecordIt = std::ranges::find_if(ToBeCheckedNodeRecords, 
-				[NextNode](const NodeRecord& ToBeCheckedNodeRecord)
+				[&NextNode](const NodeRecord& ToBeCheckedNodeRecord)
 				{
-					if (ToBeCheckedNodeRecord.CurrentNode == NextNode)
-					{
-						return true;
-					}
-					
-					return false;	
+					return ToBeCheckedNodeRecord.CurrentNode == NextNode;
 				});
 			
-			const bool bIsNodeInToBeCheckedRecords = (FoundToBeCheckedRecordIt != ToBeCheckedNodeRecords.end()); 
+			const bool bIsNodeInToBeCheckedRecords = FoundToBeCheckedRecordIt != ToBeCheckedNodeRecords.end(); 
 			if (bIsNodeInToBeCheckedRecords)
 			{
-				if (FoundToBeCheckedRecordIt->CostSoFar < CurrentGCost)
+				if (FoundToBeCheckedRecordIt->CostSoFar <= CurrentGCost)
 				{
 					continue;
 				}
-				else
-				{
-					ToBeCheckedNodeRecords.erase(FoundToBeCheckedRecordIt);	
-				}
+				
+				ToBeCheckedNodeRecords.remove(*FoundToBeCheckedRecordIt);	
 			}
+			
 			
 			NodeRecord ConnectionRecord
 			{
@@ -140,12 +126,13 @@ std::vector<Node*>AStar::FindPath(Node* const StartNode, Node* const GoalNode) c
 		if (CurrentNodeRecordIt == ToBeCheckedNodeRecords.end())
 		{
 			UE_LOG(LogTemp, Warning, TEXT("CurrentNodeRecordIt is invalid"));
-			break;	
+			return std::vector<Node*>{};	
 		}
 		
-		ToBeCheckedNodeRecords.erase(CurrentNodeRecordIt);
+		ToBeCheckedNodeRecords.remove(CurrentNodeRecord);
 		CheckedNodeRecords.push_back(CurrentNodeRecord);
 	}
+	
 	
 	if (CheckedNodeRecords.empty())
 	{
@@ -195,8 +182,10 @@ std::vector<Node*>AStar::FindPath(Node* const StartNode, Node* const GoalNode) c
 	return Path;
 }
 
-float AStar::GetHeuristicCost(Node* const StartNode, Node* const EndNode) const
+float AStar::GetHeuristicCost(const Node* const StartNode, const Node* const EndNode) const
 {
 	const FVector2D ToDestination = AStarGraph->GetNode(EndNode->GetId())->GetPosition() - AStarGraph->GetNode(StartNode->GetId())->GetPosition();
 	return HeuristicFunction(abs(ToDestination.X), abs(ToDestination.Y));
 }
+
+	
