@@ -103,6 +103,11 @@ void ALevel_Navmesh::Tick(float DeltaTime)
 		
 	}
 	
+	if (bDrawTarget)
+	{
+		DrawDebugSphere(GetWorld(), TargetPosition, 20, 5, FColor::Red, false);
+	}
+	
 	UpdateImGui();
 }
 
@@ -148,6 +153,7 @@ void ALevel_Navmesh::UpdateImGui()
 		ImGui::Checkbox("NavGraph", &bDrawNavGraph);
 		ImGui::Checkbox("Path", &bDrawPath);
 		ImGui::Checkbox("Portals", &bDrawPortals);
+		ImGui::Checkbox("Target", &bDrawTarget);
 		
 		//End
 		ImGui::End();
@@ -215,6 +221,8 @@ TArray<TArray<FVector>> ALevel_Navmesh::ExtractNavMeshTris() const
 void ALevel_Navmesh::SetTarget()
 {
 	GameAI::NavMeshPathfinding Pathfinder{};
+	
+	TargetPosition = LatestMouseWorldPos;
 	std::vector<FVector2D> Path = Pathfinder.FindPath(Agent->GetPosition(), 
 	FVector2D{ LatestMouseWorldPos }, NavigationGraph.get());
 

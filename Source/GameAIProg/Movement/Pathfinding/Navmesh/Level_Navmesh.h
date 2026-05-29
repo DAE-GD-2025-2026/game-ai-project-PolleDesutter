@@ -36,12 +36,15 @@ private:
 	ASteeringAgent* Agent{}; // ref
 	PathFollow PathFollow{};
 	std::vector<FVector2D> DebugDrawPath{};
+	FVector TargetPosition{};
+	
 	
 	bool bDrawNavPolyVertices{ false };
 	bool bDrawNavPoly{ true };
 	bool bDrawNavGraph{ true };
 	bool bDrawPath{ true };
 	bool bDrawPortals{ false };
+	bool bDrawTarget{ false };
 	
 	void UpdateImGui();
 	
