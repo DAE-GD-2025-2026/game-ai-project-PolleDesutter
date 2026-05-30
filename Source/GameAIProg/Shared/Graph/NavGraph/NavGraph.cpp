@@ -30,7 +30,7 @@ std::unique_ptr<GameAI::NavGraph> GameAI::NavGraph::Clone() const
 	return std::make_unique<NavGraph>(*this);
 }
 
-int GameAI::NavGraph::GetNodeIdFromEdgeIndex(int EdgeIdx) const
+int GameAI::NavGraph::GetNodeIdFromEdgeIndex(const int EdgeIdx) const
 {
 	if (EdgeIdx < 0)
 	{
@@ -51,7 +51,6 @@ int GameAI::NavGraph::GetNodeIdFromEdgeIndex(int EdgeIdx) const
 
 void GameAI::NavGraph::CreateNavigationGraph()
 {
-	
 	// Going over all the edges of the navigation mesh and create nodes
 	int EdgeLoopIdx{};
 	for (const TriPolygon::Edge& CurrentEdge : pNavPoly->GetEdges())
