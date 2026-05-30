@@ -18,17 +18,17 @@ public:
 	static std::vector<NavLine> FindPortals(std::vector<Node*> const & Path, TriPolygon const & NavPoly)
 	{
 		// TODO: implement
-		//Container
+		// Container
 		std::vector<NavLine> Portals = {};
+	
+		for (int i{}; i < Path.size() - 1; ++i)
+		{
+			const Node* CurrentNode = Path[i];
+			const Node* NextNode = Path[i + 1];
+			
+			Portals.push_back(NavLine(CurrentNode->GetPosition(), NextNode->GetPosition()));
+		}
 		
-		//For each node received, get it's corresponding line
-		
-			//Redetermine it's "orientation" based on the required path (left-right vs right-left) - p1 should be right point
-
-			//Store portal
-
-		//Add degenerate portal to force end evaluation
-
 		return Portals;
 	}
 
