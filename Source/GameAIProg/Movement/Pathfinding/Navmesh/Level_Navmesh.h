@@ -8,6 +8,7 @@
 #include "Shared/Graph/NavGraph/NavGraph.h"
 #include "Level_Navmesh.generated.h"
 
+
 UCLASS()
 class GAMEAIPROG_API ALevel_Navmesh : public ALevel_Base
 {

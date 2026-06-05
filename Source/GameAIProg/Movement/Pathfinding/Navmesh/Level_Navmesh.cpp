@@ -67,10 +67,6 @@ void ALevel_Navmesh::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-	if (bDrawNavPoly)
-	{
-		NavigationGraph->GetNavPolygon()->DrawDebug(GetWorld(), FColor::Yellow);
-	}
 	
 	if (bDrawNavPolyVertices)
 	{
@@ -78,6 +74,11 @@ void ALevel_Navmesh::Tick(float DeltaTime)
 		{
 			DrawDebugPoint(GetWorld(), Vertex, 10.0f, FColor::Cyan);
 		}
+	}
+	
+	if (bDrawNavPoly)
+	{
+		NavigationGraph->GetNavPolygon()->DrawDebug(GetWorld(), FColor::Yellow);
 	}
 	
 	if (bDrawNavGraph)
@@ -97,7 +98,6 @@ void ALevel_Navmesh::Tick(float DeltaTime)
 		}
 	}
 	
-	// Todo: Draw the portals travelled through with SSFA
 	if (bDrawPortals)
 	{
 		for (const GameAI::NavLine DebugPortal : DebugPortals)
