@@ -1,5 +1,7 @@
 #include "FSM.h"
 
+#include <ThirdParty/ShaderConductor/ShaderConductor/External/SPIRV-Headers/include/spirv/unified1/spirv.h>
+
 #include "State.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
@@ -92,6 +94,16 @@ void GameAI::FSM::FSM::AddState(std::unique_ptr<State>&& NewState)
 void GameAI::FSM::FSM::AddTransition(State* From, State* To, std::function<bool(UBlackboardComponent*)> EvalFunc)
 {
 	Transitions[From].push_back({EvalFunc, To});
+}
+
+bool GameAI::FSM::FSM::IsRunning() const
+{
+	return bIsRunning;
+}
+
+bool GameAI::FSM::FSM::IsSuspended() const
+{
+	return bIsSuspended;
 }
 
 void GameAI::FSM::FSM::ChangeState(State* NewState)

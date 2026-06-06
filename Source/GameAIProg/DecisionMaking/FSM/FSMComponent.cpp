@@ -5,7 +5,6 @@
 
 #include "FSM.h"
 #include "State.h"
-#include "States/ChaseState.h"
 
 // Sets default values for this component's properties
 UFSMComponent::UFSMComponent()
@@ -18,14 +17,14 @@ UFSMComponent::UFSMComponent()
 }
 
 
-void UFSMComponent::AddState(std::unique_ptr<GameAI::FSM::State>&& NewState)
+void UFSMComponent::AddState(std::unique_ptr<GameAI::FSM::State>&& NewState) const
 {
+	FSMInstance->AddState(std::move(NewState));
 }
 
 void UFSMComponent::AddTransition(GameAI::FSM::State* From, GameAI::FSM::State* To,
-                                  std::function<bool(UBlackboardComponent*)> EvalFunc) const
+                                  const std::function<bool(UBlackboardComponent*)>& EvalFunc) const
 {
-	// TODO
 	FSMInstance->AddTransition(From, To, EvalFunc);
 }
 
@@ -40,22 +39,42 @@ void UFSMComponent::BeginPlay()
 void UFSMComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	// TODO
+
+	FSMInstance->Update(DeltaTime);
 }
 
 void UFSMComponent::StartLogic()
 {
 	Super::StartLogic();
 
-	// TODO
+	FSMInstance->Start();
 }
 
 void UFSMComponent::StopLogic(const FString& Reason)
 {
-	// TODO
+	Super::StopLogic(Reason);
+
+	FSMInstance->Stop();
+}
+
+void UFSMComponent::ResumeLogic()
+{
+	// I know the BrainComponent Has a Resume/Pause Logic, but they are
+	// special, so I cannot be assed to work with them
+	FSMInstance->Resume();
+}
+
+void UFSMComponent::SuspendLogic()
+{
+	FSMInstance->Suspend();
 }
 
 bool UFSMComponent::IsRunning() const
 {
-	return bIsRunning;
+	return FSMInstance->IsRunning();
+}
+
+bool UFSMComponent::IsPaused() const
+{
+	return FSMInstance->IsSuspended();
 }

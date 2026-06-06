@@ -13,7 +13,7 @@ namespace GameAI::FSM
 {
 	class State;
 	class Transition;
-	class FSM; // contains FSM logic
+	class FSM;
 }
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
@@ -32,11 +32,16 @@ public:
 	virtual void StartLogic() override;
 	virtual void StopLogic(const FString& Reason) override;
 
-	virtual bool IsRunning() const override;
+	virtual void ResumeLogic();
+	virtual void SuspendLogic();
 
-	void AddState(std::unique_ptr<GameAI::FSM::State>&& NewState);
+
+	virtual bool IsRunning() const override;
+	virtual bool IsPaused() const override;
+
+	void AddState(std::unique_ptr<GameAI::FSM::State>&& NewState) const;
 	void AddTransition(GameAI::FSM::State* From, GameAI::FSM::State* To,
-	                   std::function<bool(UBlackboardComponent*)> EvalFunc) const;
+	                   const std::function<bool(UBlackboardComponent*)>& EvalFunc) const;
 
 protected:
 	// Called when the game starts
@@ -44,5 +49,5 @@ protected:
 
 private:
 	std::unique_ptr<GameAI::FSM::FSM> FSMInstance;
-	bool bIsRunning{false};
+	bool bIsRunning{};
 };

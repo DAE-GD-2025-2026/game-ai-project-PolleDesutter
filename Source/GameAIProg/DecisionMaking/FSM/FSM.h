@@ -18,22 +18,24 @@ namespace GameAI::FSM
 		explicit FSM(UBlackboardComponent* NewBlackboardComponent, std::unique_ptr<State>&& StartState);
 		virtual ~FSM() = default;
 
-		void Start();
-		void Resume() const;
-		void Suspend() const;
-		void Stop();
+		virtual void Start();
+		virtual void Resume() const;
+		virtual void Suspend() const;
+		virtual void Stop();
 
 		virtual void Update(float DeltaTime);
 
 
-		void AddState(std::unique_ptr<State>&& NewState);
-		void AddTransition(State* From, State* To, std::function<bool(UBlackboardComponent*)> EvalFunc);
+		virtual void AddState(std::unique_ptr<State>&& NewState);
+		virtual void AddTransition(State* From, State* To, std::function<bool(UBlackboardComponent*)> EvalFunc);
 
 		// TODO: Add a GetState or something similar 
 
+		virtual bool IsRunning() const;
+		virtual bool IsSuspended() const;
 
 	protected:
-		void ChangeState(State* NewState);
+		virtual void ChangeState(State* NewState);
 
 		UBlackboardComponent* BlackboardComponent;
 		State* CurrentState{};
