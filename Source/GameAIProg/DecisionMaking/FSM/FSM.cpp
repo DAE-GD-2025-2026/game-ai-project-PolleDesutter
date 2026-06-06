@@ -19,7 +19,7 @@ void GameAI::FSM::FSM::AddState(const std::unique_ptr<State>&& NewState)
 
 void GameAI::FSM::FSM::AddTransition(State* From, State* To, std::function<bool()> EvalFunc)
 {
-	Transitions[From] = {To, EvalFunc};
+	Transitions[From].second.push_back(std::make_pair(EvalFunc, To));
 }
 
 void GameAI::FSM::FSM::ChangeState(State* NewState)

@@ -29,8 +29,11 @@ namespace GameAI::FSM
 		UBlackboardComponent* BlackboardComponent;
 		State* CurrentState{};
 
-		// First State Is Key to (if) CurrentState, and an expression & NewState is the other State
-		std::unordered_map<State*, std::pair<State*, std::function<bool()>>> Transitions{};
+		// If Function Returns True, State* is the state to transition to
+		using TransitionsType = std::vector<std::pair<std::function<bool()>, State*>>;
+
+		// First State is the Current State or a possible Current State
+		std::unordered_map<State*, std::pair<State*, TransitionsType>> Transitions;
 		std::set<std::unique_ptr<State>> States;
 	};
 }
