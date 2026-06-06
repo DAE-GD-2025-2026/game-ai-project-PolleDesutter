@@ -3,18 +3,69 @@
 #include "State.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
+
 GameAI::FSM::FSM::FSM(UBlackboardComponent* NewBlackboardComponent, std::unique_ptr<State>&& StartState) :
 	BlackboardComponent{NewBlackboardComponent}
 {
 	State* StatePointer = StartState.get();
 	AddState(std::move(StartState));
 
-	ChangeState(StatePointer);
+	CurrentState = StatePointer;
+}
+
+void GameAI::FSM::FSM::Start()
+{
+	if (bIsRunning)
+	{
+		return;
+	}
+
+	bIsRunning = true;
+	CurrentState->OnEnter(BlackboardComponent);
+}
+
+void GameAI::FSM::FSM::Resume() const
+{
+	if (!bIsRunning || !bIsSuspended)
+	{
+		return;
+	}
+
+	CurrentState->OnResume();
+}
+
+void GameAI::FSM::FSM::Suspend() const
+{
+	if (!bIsRunning || bIsSuspended)
+	{
+		return;
+	}
+
+	CurrentState->OnSuspense();
+}
+
+void GameAI::FSM::FSM::Stop()
+{
+	if (!bIsRunning)
+	{
+		return;
+	}
+
+	CurrentState->OnExit();
+	CurrentState = nullptr;
+
+	bIsRunning = false;
 }
 
 void GameAI::FSM::FSM::Update(const float DeltaTime)
 {
-	// If No Transitions is connected to CurrentState
+	if (!bIsRunning || bIsSuspended)
+	{
+		return;
+	}
+
+	// If No Transition Is Connected to the CurrentState, 
+	// then do not check the transitions
 	if (!Transitions.contains(CurrentState))
 	{
 		CurrentState->Update(DeltaTime);
@@ -45,6 +96,11 @@ void GameAI::FSM::FSM::AddTransition(State* From, State* To, std::function<bool(
 
 void GameAI::FSM::FSM::ChangeState(State* NewState)
 {
+	if (!bIsRunning || bIsSuspended)
+	{
+		return;
+	}
+
 	if (CurrentState)
 	{
 		CurrentState->OnExit();
