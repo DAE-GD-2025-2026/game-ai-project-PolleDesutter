@@ -5,11 +5,11 @@
 
 namespace GameAI::FSM
 {
-	class FSM
+	class State
 	{
 	public:
-		FSM() = default;
-		virtual ~FSM() = default;
+		State() = default;
+		virtual ~State() = default;
 	
 		virtual void OnEnter(UBlackboardComponent* NewBlackboardComponent);
 	

@@ -1,7 +1,7 @@
 #include "FSM.h"
 
 
-void GameAI::FSM::FSM::OnEnter(UBlackboardComponent* NewBlackboardComponent)
+void GameAI::FSM::State::OnEnter(UBlackboardComponent* NewBlackboardComponent)
 {
 	BlackboardComponent = NewBlackboardComponent;
 	if (!BlackboardComponent)

@@ -2,7 +2,7 @@
 
 void GameAI::FSM::ChaseState::OnEnter(UBlackboardComponent* NewBlackboardComponent)
 {
-	FSM::OnEnter(NewBlackboardComponent);
+	State::OnEnter(NewBlackboardComponent);
 	
 	UE_LOGFMT(LogTemp, Warning, "COOOL");
 }

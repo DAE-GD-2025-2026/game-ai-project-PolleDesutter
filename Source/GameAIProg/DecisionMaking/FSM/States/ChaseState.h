@@ -1,10 +1,10 @@
 #pragma once
 
-#include "DecisionMaking/FSM/FSM.h"
+#include "DecisionMaking/FSM/State.h"
 
 namespace GameAI::FSM
 {
-	class ChaseState : public FSM
+	class ChaseState : public State
 	{
 	public:
 		virtual void OnEnter(UBlackboardComponent* NewBlackboardComponent) override;
