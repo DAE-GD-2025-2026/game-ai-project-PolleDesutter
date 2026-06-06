@@ -5,6 +5,8 @@
 #include <functional>
 #include <memory>
 
+#include "FSM.h"
+
 #include "CoreMinimal.h"
 #include "BrainComponent.h"
 #include "FSMComponent.generated.h"
@@ -12,8 +14,6 @@
 namespace GameAI::FSM
 {
 	class State;
-	class Transition;
-	class FSM;
 }
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
@@ -23,7 +23,10 @@ class GAMEAIPROG_API UFSMComponent : public UBrainComponent
 
 public:
 	// Sets default values for this component's properties
-	UFSMComponent();
+	explicit UFSMComponent();
+	virtual ~UFSMComponent() override; // for forwarding
+
+	void InitializeFSM(std::unique_ptr<GameAI::FSM::State>&& StartState);
 
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,

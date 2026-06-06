@@ -1,7 +1,5 @@
 #include "FSM.h"
 
-#include <ThirdParty/ShaderConductor/ShaderConductor/External/SPIRV-Headers/include/spirv/unified1/spirv.h>
-
 #include "State.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
@@ -13,6 +11,10 @@ GameAI::FSM::FSM::FSM(UBlackboardComponent* NewBlackboardComponent, std::unique_
 	AddState(std::move(StartState));
 
 	CurrentState = StatePointer;
+}
+
+GameAI::FSM::FSM::~FSM()
+{
 }
 
 void GameAI::FSM::FSM::Start()

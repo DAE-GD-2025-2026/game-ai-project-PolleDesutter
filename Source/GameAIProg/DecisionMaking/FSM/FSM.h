@@ -16,7 +16,7 @@ namespace GameAI::FSM
 	public:
 		// Pointer and not reference because I allow a nullptr to be passed
 		explicit FSM(UBlackboardComponent* NewBlackboardComponent, std::unique_ptr<State>&& StartState);
-		virtual ~FSM() = default;
+		virtual ~FSM(); // for forwarding
 
 		virtual void Start();
 		virtual void Resume() const;
@@ -26,13 +26,13 @@ namespace GameAI::FSM
 		virtual void Update(float DeltaTime);
 
 
-		virtual void AddState(std::unique_ptr<State>&& NewState);
+		void AddState(std::unique_ptr<State>&& NewState);
 		virtual void AddTransition(State* From, State* To, std::function<bool(UBlackboardComponent*)> EvalFunc);
 
 		// TODO: Add a GetState or something similar 
 
-		virtual bool IsRunning() const;
-		virtual bool IsSuspended() const;
+		bool IsRunning() const;
+		bool IsSuspended() const;
 
 	protected:
 		virtual void ChangeState(State* NewState);
