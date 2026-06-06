@@ -28,7 +28,7 @@ void ALevel_FSM::BeginPlay()
 	{
 		if (UFSMComponent* Fsm = Cast<UFSMComponent>(AIController->GetBrainComponent()))
 		{
-			Fsm->AddState(std::make_unique<GameAI::FSM::ChaseState>());
+			Fsm->InitializeFSM(std::make_unique<GameAI::FSM::ChaseState>());
 			AIController->RunFiniteStateMachine();
 		}
 	}
