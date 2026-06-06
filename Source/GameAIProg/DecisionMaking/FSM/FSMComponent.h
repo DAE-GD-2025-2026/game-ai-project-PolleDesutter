@@ -28,15 +28,16 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
-	
+
 	virtual void StartLogic() override;
 	virtual void StopLogic(const FString& Reason) override;
-	
-	virtual bool IsRunning() const override; 
-	
+
+	virtual bool IsRunning() const override;
+
 	void AddState(std::unique_ptr<GameAI::FSM::State>&& NewState);
-	void AddTransition(GameAI::FSM::State* From, GameAI::FSM::State* To, std::function<bool()> EvalFunc) const;
-		
+	void AddTransition(GameAI::FSM::State* From, GameAI::FSM::State* To,
+	                   std::function<bool(UBlackboardComponent*)> EvalFunc) const;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

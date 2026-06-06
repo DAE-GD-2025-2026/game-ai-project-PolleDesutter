@@ -3,6 +3,7 @@
 
 #include "FSMComponent.h"
 
+#include "FSM.h"
 #include "State.h"
 #include "States/ChaseState.h"
 
@@ -14,18 +15,18 @@ UFSMComponent::UFSMComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	// TODO Setup FSM
-	
 }
 
 
 void UFSMComponent::AddState(std::unique_ptr<GameAI::FSM::State>&& NewState)
 {
-	
 }
 
-void UFSMComponent::AddTransition(GameAI::FSM::State* From, GameAI::FSM::State* To, std::function<bool()> EvalFunc) const
+void UFSMComponent::AddTransition(GameAI::FSM::State* From, GameAI::FSM::State* To,
+                                  std::function<bool(UBlackboardComponent*)> EvalFunc) const
 {
 	// TODO
+	FSMInstance->AddTransition(From, To, EvalFunc);
 }
 
 // Called when the game starts
@@ -58,4 +59,3 @@ bool UFSMComponent::IsRunning() const
 {
 	return bIsRunning;
 }
-

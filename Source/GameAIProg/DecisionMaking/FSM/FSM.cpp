@@ -7,9 +7,16 @@ GameAI::FSM::FSM::FSM(UBlackboardComponent* NewBlackboardComponent) :
 {
 }
 
-void GameAI::FSM::FSM::Update(float DeltaTime)
+void GameAI::FSM::FSM::Update(const float DeltaTime)
 {
-	CurrentState->Update(DeltaTime);
+	// If No Transitions is connected to CurrentState
+	if (!Transitions.contains(CurrentState))
+	{
+		CurrentState->Update(DeltaTime);
+		return;
+	}
+
+	auto StateTransitionIt = Transitions.find(CurrentState);
 }
 
 void GameAI::FSM::FSM::AddState(const std::unique_ptr<State>&& NewState)
@@ -17,7 +24,7 @@ void GameAI::FSM::FSM::AddState(const std::unique_ptr<State>&& NewState)
 	States.insert(NewState);
 }
 
-void GameAI::FSM::FSM::AddTransition(State* From, State* To, std::function<bool()> EvalFunc)
+void GameAI::FSM::FSM::AddTransition(State* From, State* To, std::function<bool(UBlackboardComponent*)> EvalFunc)
 {
 	Transitions[From].second.push_back(std::make_pair(EvalFunc, To));
 }
