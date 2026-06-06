@@ -3,7 +3,7 @@
 void GameAI::FSM::ChaseState::OnEnter(UBlackboardComponent* NewBlackboardComponent)
 {
 	State::OnEnter(NewBlackboardComponent);
-	
+
 	UE_LOGFMT(LogTemp, Warning, "COOOL");
 }
 
@@ -19,6 +19,6 @@ void GameAI::FSM::ChaseState::OnSuspense()
 {
 }
 
-void GameAI::FSM::ChaseState::Update()
+void GameAI::FSM::ChaseState::Update(const float DeltaTime)
 {
 }

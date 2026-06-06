@@ -11,6 +11,7 @@ namespace GameAI::FSM
 		virtual void OnExit() override;
 		virtual void OnResume() override;
 		virtual void OnSuspense() override;
-		virtual void Update() override;
+
+		virtual void Update(float DeltaTime) override;
 	};
 }
