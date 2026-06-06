@@ -50,6 +50,16 @@ void GameAI::FSM::FSM::ChangeState(State* NewState)
 		CurrentState->OnExit();
 	}
 
+	const auto StateIt = std::ranges::find_if(States, [NewState](const std::unique_ptr<State>& State)
+	{
+		return State.get() == NewState;
+	});
+	if (StateIt == States.end())
+	{
+		return;
+	}
+
+
 	CurrentState = NewState;
 
 	if (CurrentState)
