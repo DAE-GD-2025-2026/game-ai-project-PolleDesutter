@@ -3,6 +3,8 @@
 
 #include "FSMComponent.h"
 
+#include "FSM.h"
+#include "States/ChaseState.h"
 
 // Sets default values for this component's properties
 UFSMComponent::UFSMComponent()
@@ -12,12 +14,15 @@ UFSMComponent::UFSMComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	// TODO Setup FSM
+	FSMInstance = std::make_unique<GameAI::FSM::ChaseState>();
+	FSMInstance->OnEnter(GetBlackboardComponent());
+	
 }
 
 
 void UFSMComponent::AddState(std::unique_ptr<GameAI::FSM::State>&& NewState)
 {
-	// TODO
+	
 }
 
 void UFSMComponent::AddTransition(GameAI::FSM::State* From, GameAI::FSM::State* To, std::function<bool()> EvalFunc) const
